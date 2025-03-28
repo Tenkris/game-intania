@@ -7,6 +7,8 @@ import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import "./globals.css";
+import Image from "next/image";
+import backgroundImage from "@/app/assets/bg/background.jpg"
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -30,8 +32,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={geistSans.className} suppressHydrationWarning>
-      <body className="bg-background text-foreground">
-        <ThemeProvider
+      <body className="bg-background text-foreground w-screen h-screen">
+        <div className="w-full h-full">
+          <div className="absolute -z-50 w-full h-full">
+            <Image
+              src={backgroundImage}
+              alt="background"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          {children}
+      
+        </div>
+        
+        {/* <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
@@ -70,7 +84,7 @@ export default function RootLayout({
               </footer>
             </div>
           </main>
-        </ThemeProvider>
+        </ThemeProvider> */}
       </body>
     </html>
   );
