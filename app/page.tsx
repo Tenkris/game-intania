@@ -1,3 +1,4 @@
+import React9Slice from "@/components/common/React9Slice";
 import { logout } from "@/utils/api/auth";
 import { getMyUser } from "@/utils/api/user";
 import Link from "next/link";
@@ -32,6 +33,17 @@ export default async function HomePage() {
             </>
           )
         }
+
+        {/* <button>
+          <React9Slice 
+            image="/images/button2.png"
+            width={200}
+            height={50}
+            border={15}
+            imageSize={{ x: 542, y: 542 }}
+            style={{ margin: 0, padding: 0, backgroundColor: "transparent" }}
+          />
+        </button> */}
         
       </div>
       

@@ -32,7 +32,7 @@ export default function Login() {
         <Input name="password" type="password" placeholder="Password" className="input" required />
         <button type="submit" className="button">Login</button>
         <p className="text-sm">
-          Don't have an account?
+          Don't have an account?{" "}
           <Link href="/register" className="text-blue-500 hover:underline">
             Register
           </Link>
