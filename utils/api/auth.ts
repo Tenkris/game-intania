@@ -44,3 +44,31 @@ export async function logout(): Promise<undefined> {
     // Redirect to login page
     redirect('/login')
 }
+
+
+export async function register(email: string, password: string): Promise<void | HTTPInvalidResponse> {
+    const response = await fetch(`${API_URL}/auth/register`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+        return (await response.json())
+    }
+
+    const data: UserWithToken = (await response.json()).data;
+
+    // Set cookie
+    const cookieStore = await cookies()
+    cookieStore.set('token', data.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== 'development',
+        maxAge: 60 * 60 * 24 * 7, // 1 week
+        sameSite: 'strict',
+    })
+
+    return redirect('/')
+}

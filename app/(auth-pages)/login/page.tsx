@@ -1,6 +1,7 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import { login } from "@/utils/api/auth";
+import Link from "next/link";
 
 export default function Login() {
   
@@ -30,7 +31,12 @@ export default function Login() {
         <Input name="email" type="email" placeholder="Email" className="input" required />
         <Input name="password" type="password" placeholder="Password" className="input" required />
         <button type="submit" className="button">Login</button>
-        <p className="text-sm">Don't have an account? <a href="/register" className="link">Register</a></p>
+        <p className="text-sm">
+          Don't have an account?
+          <Link href="/register" className="text-blue-500 hover:underline">
+            Register
+          </Link>
+        </p>
       </form>
       
       
