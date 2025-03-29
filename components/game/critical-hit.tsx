@@ -140,7 +140,7 @@ export default function CriticalHit({ onComplete }: CriticalHitProps) {
 
   return (
     <div className="absolute w-full h-full z-30 flex flex-col justify-center items-center">
-      <div className="w-[40rem] h-[26rem] flex flex-col justify-center items-center rounded-lg relative">
+      <div className="w-[40rem] h-[30rem] flex flex-col justify-center items-center rounded-lg relative">
         <Image
           src={signTallImage}
           alt="Button Sign"
