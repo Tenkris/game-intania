@@ -69,7 +69,8 @@ export default function Leaderboard({ myUser }: { myUser: User }) {
                             <thead>
                                 <tr>
                                     <th className="px-2 py-2 w-[15%]">Rank</th>
-                                    <th className="px-2 py-2 w-[65%]">Email</th>
+                                    <th className="px-2 py-2 w-[45%]">Email</th>
+                                    <th className="px-2 py-2 w-[20%]">Name</th>
                                     <th className="px-2 py-2 w-[20%]">Level</th>
                                 </tr>
                             </thead>
@@ -78,6 +79,7 @@ export default function Leaderboard({ myUser }: { myUser: User }) {
                                 <tr className="bg-blue-100">
                                     <td className="px-2 py-2 text-center">{users[myUserIndex].rank}</td>
                                     <td className="px-2 py-2">{users[myUserIndex].user.email}</td>
+                                    <td className="px-2 py-2">{( users[myUserIndex].user.name ? users[myUserIndex].user.name : "Anonymous")}</td>
                                     <td className="px-2 py-2 text-center">{users[myUserIndex].user.level_id}</td>
                                 </tr>
                                     
@@ -105,7 +107,8 @@ export default function Leaderboard({ myUser }: { myUser: User }) {
                                 <thead>
                                     <tr>
                                         <th className="px-2 py-2 w-[15%]">Rank</th>
-                                        <th className="px-2 py-2 w-[65%]">Email</th>
+                                        <th className="px-2 py-2 w-[45%]">Email</th>
+                                        <th className="px-2 py-2 w-[20%]">Name</th>
                                         <th className="px-2 py-2 w-[20%]">Level</th>
                                     </tr>
                                 </thead>
@@ -115,6 +118,7 @@ export default function Leaderboard({ myUser }: { myUser: User }) {
                                             <tr key={user.user.email} className={`${user.user.email === myUser.email ? "bg-blue-100" : ""}`}>
                                                 <td className="px-2 py-2 text-center">{user.rank}</td>
                                                 <td className="px-2 py-2">{user.user.email}</td>
+                                                <td className="px-2 py-2">{(user.user.name? user.user.name : "Anonymous")}</td>
                                                 <td className="px-2 py-2 text-center">{user.user.level_id}</td>
                                             </tr>
                                         ))
