@@ -1,17 +1,16 @@
-'use client'
+"use client";
 import { Button } from "@/components/ui/button";
 import { UpdateUserBody } from "@/types/user";
-import { getMyUser, updateUser } from "@/utils/api/user";
+import { updateUser } from "@/utils/api/user";
 import { useRouter } from "next/navigation";
 
 const Gift = () => {
-const router = useRouter();
+  const router = useRouter();
   const handleUpdateUser = async (updateData: UpdateUserBody) => {
     const response = await updateUser(updateData);
     if (response) {
-      router.push("/"); 
+      router.push("/end");
     }
-
   };
 
   return (
