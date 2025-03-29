@@ -292,26 +292,30 @@ function BossDefense({
           </span>
         </div>
 
-        {/* Status text based on shield level with animated pulse for feedback */}
-        <p
-          className={`text-lg font-bold ${
-            shieldValue > 75
-              ? "text-green-500 animate-pulse"
+        {/* Status text based on shield level with fixed positioning */}
+        <div className="h-10 flex items-center justify-center">
+          {" "}
+          {/* Fixed height container */}
+          <p
+            className={`text-lg font-bold ${
+              shieldValue > 75
+                ? "text-green-500 shield-status-perfect"
+                : shieldValue > 50
+                  ? "text-blue-400"
+                  : shieldValue > 25
+                    ? "text-yellow-500"
+                    : "text-red-500"
+            }`}
+          >
+            {shieldValue > 75
+              ? "PERFECT DEFENSE!"
               : shieldValue > 50
-                ? "text-blue-400"
+                ? "STRONG DEFENSE!"
                 : shieldValue > 25
-                  ? "text-yellow-500"
-                  : "text-red-500"
-          }`}
-        >
-          {shieldValue > 75
-            ? "PERFECT DEFENSE!"
-            : shieldValue > 50
-              ? "STRONG DEFENSE!"
-              : shieldValue > 25
-                ? "WEAK DEFENSE!"
-                : "VULNERABLE!"}
-        </p>
+                  ? "WEAK DEFENSE!"
+                  : "VULNERABLE!"}
+          </p>
+        </div>
       </div>
 
       {/* Shield effect portal with smoother transitions */}
