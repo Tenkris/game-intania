@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { UpdateUserBody, User } from "@/types/user";
 import { updateUser, getMyUser } from "@/utils/api/user";
 import { useRouter } from "next/navigation";
+import ButtonImage from "@/components/common/ButtonImage";
 
 const mockUpgradables = [
   { label: "+ 20 ATK", attribute: "attack", value: 20 },
@@ -36,17 +37,14 @@ const GiftButtons = () => {
   return (
     <div className="grid grid-cols-2 gap-4">
       {mockUpgradables.map((item) => (
-        <Button
-          key={item.attribute}
-          className="flex"
-          variant={"default"}
-          size={"lg"}
+        <ButtonImage
+          key={item.label}
           onClick={() =>
             handleUpdateUser(item.attribute as keyof User, item.value)
           }
         >
           {item.label}
-        </Button>
+        </ButtonImage>
       ))}
     </div>
   );
