@@ -6,6 +6,8 @@ import heroImage from "@/app/assets/character/hero.png";
 import monsterImage from "@/app/assets/character/monster.png";
 import HealthBar from "@/components/health/health-bar";
 import signImage from "@/app/assets/hud/sign.webp";
+import signTallImage from "@/app/assets/hud/sign-tall.webp";
+import buttonImage from "@/app/assets/hud/button-wide.webp";
 import { LevelData, QuestionData } from "@/types/level";
 
 const API_URL =
@@ -212,7 +214,12 @@ export default function GamePage({
         </div>
         {/* Overlay */}
         <div className="absolute w-full h-full z-30 flex justify-center items-center">
-          <div className="bg-white/80 w-1/2 h-1/2 flex flex-col justify-center items-center rounded-lg">
+          <div className="w-[40rem] h-[30rem] flex flex-col justify-center items-center rounded-lg relative">
+            <Image
+              src={signTallImage}
+              alt="Button Sign"
+              className="w-full h-full absolute  top-0 -z-[1] left-0 [image-rendering:pixelated]"
+            ></Image>
             <h1 className="text-2xl font-bold mb-4">Question</h1>
             {loading ? (
               <p>Loading...</p>
@@ -222,16 +229,21 @@ export default function GamePage({
                 {choices && (
                   <div className="flex flex-col gap-2 mt-4">
                     {choices.map((choice, index) => (
-                      <button
-                        key={index}
-                        className="bg-blue-500 text-white px-4 py-2 rounded"
-                        onClick={() => {
-                          onSelectChoice(index);
-                          // Handle choice click
-                        }}
-                      >
-                        {choice}
-                      </button>
+                      <div className="relative w-full" key={index}>
+                        <button
+                          className="px-4 py-2 rounded relative text-black w-full z-10"
+                          onClick={() => {
+                            // Handle choice click
+                          }}
+                        >
+                          {choice}
+                        </button>
+                        <Image
+                          src={buttonImage}
+                          alt="Button Sign"
+                          className="w-full h-full absolute  top-0 left-0 [image-rendering:pixelated]"
+                        ></Image>
+                      </div>
                     ))}
                   </div>
                 )}
