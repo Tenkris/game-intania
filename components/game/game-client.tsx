@@ -565,8 +565,8 @@ export default function GamePage({
         level_id: levelData.level + 1,
       };
       updateUser(updatedUserData).then(() => {
-        // router.push("/gift");
         setIsTimerStarted(false);
+        // Show Level complete modal
         setShowLevelComplete(true);
         setCompleted(true);
       });
@@ -575,11 +575,9 @@ export default function GamePage({
     } else if (gameState.hero.health <= 0) {
       // Handle hero defeat
       console.log("Hero defeated!");
-      // Redirect to home
-      // router.push("/end");
       setIsTimerStarted(false);
       // Show defeat animation or message
-      // Reset game state or redirect to another page
+      // Show Level complete modal
       setShowLevelComplete(true);
     }
   }, [gameState.boss.health, gameState.hero.health]);
