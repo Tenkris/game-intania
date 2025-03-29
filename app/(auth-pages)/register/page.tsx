@@ -1,7 +1,7 @@
 "use client";
 
+import BackButton from "@/components/common/BackButton";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { register } from "@/utils/api/auth";
 import Link from "next/link";
 
@@ -40,7 +40,11 @@ export default function Signup() {
         onSubmit={onSubmit}
         className="card w-96 items-center justify-center"
       >
-        <h1 className="text-2xl font-bold">Register</h1>
+        <div className="flex justify-between items-center w-full p-2 lg:p-4">
+          <BackButton href="/" />
+          <h1 className="text-2xl font-bold">Register</h1>
+          <div className="w-6 h-6"></div>
+        </div>
         <Input
           type="email"
           name="email"
@@ -62,13 +66,13 @@ export default function Signup() {
           placeholder="Confirm Password"
           required
         />
-        <button type="submit" className="button">Login</button>
         <p className="text-sm text-muted-foreground">
           Already have an account?{" "}
           <Link href="/login" className="text-blue-500 hover:underline">
             Login
           </Link>
         </p>
+        <button type="submit" className="button">Create Account</button>
       </form>
     </div>
   );

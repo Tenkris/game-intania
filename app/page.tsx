@@ -25,10 +25,11 @@ export default async function HomePage() {
           )
         }
         
-        <Link href="/leaderboard" className="button">Leaderboard</Link>
+        
         {
           userInfo && (
             <>
+              <Link href="/leaderboard" className="button">Leaderboard</Link>
               <Link href="/history" className="button">History</Link>
               <button className="button" onClick={logout}>Log Out</button>
             </>
