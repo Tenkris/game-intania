@@ -15,9 +15,6 @@ export default async function ProfilePage() {
   // Check if user is logged in
   const userInfo = await getMyUser();
 
-  const headerList = await headers();
-  const pathname = headerList.get("x-current-path");
-
   // If there is no user info, redirect to home page
   if (!userInfo) {
     redirect("/");
