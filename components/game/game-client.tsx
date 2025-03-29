@@ -94,7 +94,7 @@ export default function GamePage({
       attack: userData.attack,
     },
     boss: {
-      health: 1,
+      health: levelData.boss_hp,
       maxHealth: levelData.boss_hp,
       attack: levelData.boss_attack,
     },
