@@ -9,6 +9,7 @@ import Link from "next/link";
 import "./globals.css";
 import Image from "next/image";
 import backgroundImage from "@/app/assets/bg/background-new.jpeg";
+import { Press_Start_2P } from "next/font/google";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -25,13 +26,22 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
+const pressStart = Press_Start_2P({
+  weight: "400",
+  subsets: ["latin"],
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={geistSans.className} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${geistSans.className} ${pressStart.className}`}
+      suppressHydrationWarning
+    >
       <body className="bg-background text-foreground w-screen h-screen">
         <div className="w-full h-full">
           <div className="absolute -z-50 w-full h-full">

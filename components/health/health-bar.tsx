@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Image from "next/image";
 import fullHeart from "@/app/assets/hud/hardcore_full.png";
 import halfHeart from "@/app/assets/hud/hardcore_half.png";
