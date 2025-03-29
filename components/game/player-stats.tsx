@@ -6,7 +6,7 @@ import Image from "next/image";
 
 function PlayerStats({ attack, defense }: { attack: number; defense: number }) {
   return (
-    <div className="flex flex-col gap-2 absolute bottom-10 w-full items-center">
+    <div className="flex flex-col gap-2 absolute bottom-12 w-full items-center">
       <div className="grid grid-cols-2 justify-center items-center max-w-60 gap-10 relative w-full">
         <Image
           src={signImageCropped}
