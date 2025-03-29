@@ -15,11 +15,11 @@ export default async function HomePage() {
       <div className="card w-96 items-center justify-center">
         {
           userInfo ? (
-            <Link href="/game" className="button">Play</Link>
+            <Link href="/game" className="button w-full text-center">Play</Link>
           ) : (
             <>
-              <Link href="/login" className="button">Login</Link>
-              <Link href="/register" className="button">Register</Link>
+              <Link href="/login" className="button w-full text-center">Login</Link>
+              <Link href="/register" className="button w-full text-center">Register</Link>
             </>
             
           )
@@ -29,9 +29,9 @@ export default async function HomePage() {
         {
           userInfo && (
             <>
-              <Link href="/leaderboard" className="button">Leaderboard</Link>
-              <Link href="/history" className="button">History</Link>
-              <button className="button" onClick={logout}>Log Out</button>
+              <Link href="/leaderboard" className="button w-full text-center">Leaderboard</Link>
+              <Link href="/history" className="button w-full text-center">History</Link>
+              <button className="button w-full text-center" onClick={logout}>Log Out</button>
             </>
           )
         }
