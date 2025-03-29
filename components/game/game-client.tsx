@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import heroImage from "@/app/assets/character/hero.png";
 import monsterImage from "@/app/assets/character/monster.png";
 import HealthBar from "@/components/health/health-bar";
@@ -11,8 +11,11 @@ import buttonImage from "@/app/assets/hud/button-wide.webp";
 import { LevelData, QuestionData } from "@/types/level";
 import GameTimer from "../timer/game-timer";
 import "@/app/game.css";
-import { redirect } from "next/navigation";
-import { User } from "@/types/user";
+import { redirect, useRouter } from "next/navigation";
+import { UpdateUserBody, User } from "@/types/user";
+import BossDefense from "./client-defense";
+import { updateUser } from "@/utils/api/user";
+import CriticalHit from "./critical-hit";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:3000/api/v1";
@@ -56,8 +59,6 @@ export default function GamePage({
 
   const [shieldValue, setShieldValue] = useState(0);
   const [isShieldActive, setIsShieldActive] = useState(false);
-  const shieldTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const lastSpacebarPressRef = useRef<number>(0);
 
   // Hero animation reference
   const [heroPosition, setHeroPosition] = useState(0);
@@ -78,6 +79,7 @@ export default function GamePage({
   const [bossPosition, setBossPosition] = useState(0);
   const [isBossAttacking, setIsBossAttacking] = useState(false);
   const bossAnimationRef = useRef<number | null>(null);
+
   const bossRef = useRef<HTMLDivElement>(null);
 
   const [gameState, setGameState] = useState<{
@@ -102,8 +104,21 @@ export default function GamePage({
     whoseTurn: "hero",
   });
 
+  const gameStateRef = useRef(gameState);
+  gameStateRef.current = gameState;
+
   const countdownRef = useRef(gameState.question?.time_countdown);
   countdownRef.current = gameState.question?.time_countdown;
+
+  const [countdownTime, setCountdownTime] = useState(
+    ((gameState.question?.time_countdown ?? 10) * 1000) / 2
+  );
+  const router = useRouter();
+
+  const [showCriticalHit, setShowCriticalHit] = useState(false);
+  const [damageMultiplier, setDamageMultiplier] = useState(1.0);
+  const [showDamageText, setShowDamageText] = useState(false);
+  const [damageText, setDamageText] = useState("");
 
   const fetchQuestion = async (questionId: string) => {
     setLoading(true);
@@ -131,108 +146,55 @@ export default function GamePage({
     }
   };
 
-  function handleKeydown(event: KeyboardEvent) {
-    // Prevent default for game keys
-    if (
-      [
-        "Space",
-        "Enter",
-        "Escape",
-        "Digit1",
-        "Digit2",
-        "Digit3",
-        "Digit4",
-        "Digit5",
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-      ].includes(event.code) ||
-      ["1", "2", "3", "4", "5"].includes(event.key)
-    ) {
-      event.preventDefault();
-    }
-
-    // Log the keypress for debugging
-    console.log(
-      "Key pressed:",
-      event.code,
-      "Turn:",
-      gameState.whoseTurn,
-      "Shield:",
-      shieldValue
-    );
-
-    if (event.code === "Space") {
-      // If it's boss's turn, activate shield
-      if (gameState.whoseTurn === "boss") {
-        console.log("Activating shield! Current value:", shieldValue);
-        activateShield();
-      }
-    } else if (event.key === "1" || event.code === "Digit1") {
-      onSelectChoice(0);
-    } else if (event.key === "2" || event.code === "Digit2") {
-      onSelectChoice(1);
-    } else if (event.key === "3" || event.code === "Digit3") {
-      onSelectChoice(2);
-    } else if (event.key === "4" || event.code === "Digit4") {
-      onSelectChoice(3);
-    } else if (event.key === "5" || event.code === "Digit5") {
-      onSelectChoice(4);
-    }
-  }
-
-  const activateShield = () => {
-    // Record timestamp of press
-    const now = Date.now();
-    lastSpacebarPressRef.current = now;
-
-    // Play shield sound (only if not too frequent)
-    if (shieldValue % 10 === 0) {
-      SoundManager.play("shieldRaise");
-    }
-
-    // Increase shield value (max 100)
-    setShieldValue((prev) => Math.min(prev + 3, 100));
-
-    // Set shield as active
-    setIsShieldActive(true);
-
-    // Clear any existing timeout
-    if (shieldTimeoutRef.current) {
-      clearTimeout(shieldTimeoutRef.current);
-    }
-
-    // Set timeout to start decreasing shield if spacebar not pressed
-    shieldTimeoutRef.current = setTimeout(() => {
-      // Only start decreasing if it's been more than 200ms since last press
-      if (Date.now() - lastSpacebarPressRef.current > 200) {
-        decreaseShield();
-      }
-    }, 200);
-  };
-
-  // Function to gradually decrease shield when not pressing spacebar
-  const decreaseShield = () => {
-    setShieldValue((prev) => {
-      const newValue = Math.max(prev - 1, 0);
-
-      // If shield reaches 0, set shield inactive
-      if (newValue === 0) {
-        setIsShieldActive(false);
-        return 0;
+  const handleKeydown = useCallback(
+    (event: KeyboardEvent) => {
+      // Prevent default for game keys
+      if (
+        [
+          "Space",
+          "Enter",
+          "Escape",
+          "Digit1",
+          "Digit2",
+          "Digit3",
+          "Digit4",
+          "Digit5",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+        ].includes(event.code) ||
+        ["1", "2", "3", "4", "5"].includes(event.key)
+      ) {
+        event.preventDefault();
       }
 
-      // Schedule next decrease
-      shieldTimeoutRef.current = setTimeout(decreaseShield, 50);
+      // Log the keypress for debugging
+      console.log(
+        "Key pressed:",
+        event.code,
+        "Turn:",
+        gameStateRef.current.whoseTurn,
+        "Shield:",
+        shieldValue
+      );
+      if (event.key === "1" || event.code === "Digit1") {
+        onSelectChoice(0);
+      } else if (event.key === "2" || event.code === "Digit2") {
+        onSelectChoice(1);
+      } else if (event.key === "3" || event.code === "Digit3") {
+        onSelectChoice(2);
+      } else if (event.key === "4" || event.code === "Digit4") {
+        onSelectChoice(3);
+      } else if (event.key === "5" || event.code === "Digit5") {
+        onSelectChoice(4);
+      }
+    },
+    [gameState.whoseTurn]
+  );
 
-      return newValue;
-    });
-  };
-
-  // Animation for hero attack
-  const performHeroAttack = () => {
+  const performHeroAttack = (multiplier = 1.0) => {
     setIsHeroAttacking(true);
 
     // Move hero forward
@@ -241,8 +203,23 @@ export default function GamePage({
     const duration = 1000; // Total animation duration in ms
     const startTime = Date.now();
 
-    // Player attack sound
+    // Player attack sound with volume adjusted for multiplier effect
+    SoundManager.sounds["heroAttack"].volume = Math.min(
+      0.8,
+      0.5 + (multiplier - 1.0) * 0.3
+    );
     SoundManager.play("heroAttack");
+
+    // Calculate and show damage text
+    const baseDamage = 10; // Base damage value
+    const damage = Math.round(baseDamage * multiplier);
+    setDamageText(`${damage} (${multiplier.toFixed(1)}x)`);
+    setShowDamageText(true);
+
+    // Hide damage text after animation completes
+    setTimeout(() => {
+      setShowDamageText(false);
+    }, 1500);
 
     // Cancel any existing animation
     if (heroAnimationRef.current) {
@@ -283,7 +260,11 @@ export default function GamePage({
     heroAnimationRef.current = requestAnimationFrame(animate);
   };
 
-  async function featchHeroStats() {
+  useEffect(() => {
+    shieldValueRef.current = shieldValue;
+  }, [shieldValue]);
+
+  async function fetchHeroStats() {
     try {
       const response = await fetch(`${API_URL}/users/me`, {
         method: "GET",
@@ -314,13 +295,8 @@ export default function GamePage({
   const shieldValueRef = useRef(shieldValue);
   shieldValueRef.current = shieldValue;
 
-  const handleBossAttack = () => {
+  const handleBossAttack = (actualDamage: number) => {
     setIsBossAttacking(true);
-    // Calculate damage based on shield value
-    // More shield = less damage
-    const baseDamage = levelData.boss_attack;
-    const damageReduction = shieldValueRef.current / 100; // 0 to 1
-    const actualDamage = Math.round(baseDamage * (1 - damageReduction));
 
     // Move hero forward
     const startPos = 0;
@@ -395,19 +371,45 @@ export default function GamePage({
     setIsTimerStarted(true);
   };
 
+  const handleCriticalHitComplete = (multiplier: number) => {
+    setDamageMultiplier(multiplier);
+    setShowCriticalHit(false);
+
+    // Now perform the hero attack with the multiplier
+    performHeroAttack(multiplier);
+
+    // Update game state with damage based on multiplier
+    const baseDamage = 10; // Base damage value
+    const damage = Math.round(baseDamage * multiplier);
+
+    setGameState((prevState) => ({
+      ...prevState,
+      boss: {
+        ...prevState.boss,
+        health: Math.max(0, prevState.boss.health - damage),
+      },
+      whoseTurn: "boss",
+    }));
+
+    // Reset multiplier after a delay
+    setTimeout(() => {
+      setDamageMultiplier(1.0);
+      setShowCorrectEffect(false);
+    }, 1500);
+  };
+
   function onSelectChoice(choice: number) {
     if (gameState.whoseTurn !== "hero") {
       console.log("Not your turn!");
       return;
     }
-    if (!choices) return;
-    const selectedAnswer = choices[choice];
-    const isCorrect = selectedAnswer === answer;
+    if (!choices.current) return;
+    const selectedAnswer = choices.current[choice];
+    const isCorrect = selectedAnswer === answer.current;
     if (isCorrect) {
       setShowCorrectEffect(true);
+      SoundManager.play("correctAnswer");
 
-      // Start hero attack animation
-      performHeroAttack();
       // Prefetch the next question
       const questionId =
         levelData.question_ids[gameState.currentQuestionIndex + 1];
@@ -420,19 +422,10 @@ export default function GamePage({
           }));
         }
       });
-      setGameState((prevState) => ({
-        ...prevState,
-        boss: {
-          ...prevState.boss,
-          health: prevState.boss.health - 10, // Example damage
-        },
-        whoseTurn: "boss",
-      }));
+
+      // Show critical hit mini-game instead of immediately attacking
+      setShowCriticalHit(true);
       setIsTimerStarted(false);
-      setTimeout(() => {
-        setIsTimerStarted(true);
-        setShowCorrectEffect(false);
-      }, 1500); // Wait for animation to complete
     }
     if (!isCorrect) {
       setShowWrongEffect(true);
@@ -458,21 +451,10 @@ export default function GamePage({
     }
   }
 
-  const [countdownTime, setCountdownTime] = useState(3500);
-
   useEffect(() => {
     if (gameState.whoseTurn === "boss") {
-      // Reset shield
-      setShieldValue(0);
-      setIsShieldActive(false);
-
       setIsTimerStarted(true);
-
-      const attackTimer = setTimeout(() => {
-        handleBossAttack();
-      }, countdownTime);
-
-      return () => clearTimeout(attackTimer);
+    } else if (gameState.whoseTurn === "hero") {
     }
   }, [gameState.whoseTurn]);
 
@@ -491,7 +473,7 @@ export default function GamePage({
     return () => {
       window.removeEventListener("keydown", handleKeydown);
     };
-  }, [gameState, handleKeydown]);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -506,16 +488,13 @@ export default function GamePage({
     };
 
     fetchData();
-    featchHeroStats();
+    fetchHeroStats();
   }, [levelData]);
 
   useEffect(() => {
     return () => {
       if (heroAnimationRef.current) {
         cancelAnimationFrame(heroAnimationRef.current);
-      }
-      if (shieldTimeoutRef.current) {
-        clearTimeout(shieldTimeoutRef.current);
       }
     };
   }, []);
@@ -547,6 +526,26 @@ export default function GamePage({
       "https://s3.imjustin.dev/hackathon/hitHurt.wav",
       0.5
     );
+    SoundManager.preload(
+      "shield",
+      "https://s3.imjustin.dev/hackathon/shield.wav",
+      0.1
+    );
+    SoundManager.preload(
+      "criticalHit",
+      "https://s3.imjustin.dev/hackathon/powerUp.wav",
+      0.4
+    );
+    SoundManager.preload(
+      "criticalPerfect",
+      "https://s3.imjustin.dev/hackathon/confirmation1.wav",
+      0.5
+    );
+    SoundManager.preload(
+      "criticalGood",
+      "https://s3.imjustin.dev/hackathon/confirmation2.wav",
+      0.4
+    );
 
     // Cleanup on unmount
     return () => {
@@ -558,18 +557,35 @@ export default function GamePage({
     if (gameState.boss.health <= 0) {
       // Handle boss defeat
       console.log("Boss defeated!");
+      const updatedUserData: UpdateUserBody = {
+        ...userData,
+        level_id: levelData.level + 1,
+      };
+      updateUser(updatedUserData).then(() => {
+        router.push("/gift");
+      });
       // Show victory animation or message
       // Reset game state or redirect to another page
     } else if (gameState.hero.health <= 0) {
       // Handle hero defeat
       console.log("Hero defeated!");
+      // Redirect to home
+      router.push("/end");
+
       // Show defeat animation or message
       // Reset game state or redirect to another page
     }
   }, [gameState.boss.health, gameState.hero.health]);
 
-  let answer = gameState.question?.answer.split(",")[0];
-  let choices = gameState.question?.answer.split(",").slice(1)[0].split("|");
+  let answer = useRef(gameState.question?.answer.split(",")[0]);
+  answer.current = gameState.question?.answer.split(",")[0];
+  let choices = useRef(
+    gameState.question?.answer.split(",").slice(1)[0].split("|")
+  );
+  choices.current = gameState.question?.answer
+    .split(",")
+    .slice(1)[0]
+    .split("|");
 
   return (
     <div className="w-full h-full">
@@ -577,7 +593,7 @@ export default function GamePage({
       <div
         className={`absolute w-full h-full z-30 flex justify-center items-center ${isHeroAttacking ? "hidden" : ""}`}
       >
-        {gameState.whoseTurn === "hero" && (
+        {gameState.whoseTurn === "hero" && !showCriticalHit && (
           <div className="w-[40rem] h-[30rem] flex flex-col justify-center items-center rounded-lg relative">
             <Image
               src={signTallImage}
@@ -590,9 +606,9 @@ export default function GamePage({
             ) : (
               <div className="flex flex-col items-center">
                 <p className="text-lg">{gameState.question?.question}</p>
-                {choices && (
+                {choices.current && (
                   <div className="flex flex-col gap-2 mt-4">
-                    {choices.map((choice, index) => (
+                    {choices.current.map((choice, index) => (
                       <div className="relative w-full" key={index}>
                         <button
                           className="px-4 py-2 rounded relative text-black w-full z-10"
@@ -617,77 +633,56 @@ export default function GamePage({
             )}
           </div>
         )}
+
+        {/* Critical Hit Component */}
+        {showCriticalHit && (
+          <CriticalHit onComplete={handleCriticalHitComplete} />
+        )}
+
         {gameState.whoseTurn === "boss" && (
-          <div className="absolute w-full h-full z-30 flex flex-col justify-center items-center pointer-events-none">
-            <div className="w-[40rem] h-[20rem] flex flex-col justify-center items-center rounded-lg relative">
-              <Image
-                src={signTallImage}
-                alt="Button Sign"
-                className="w-full h-full absolute top-0 -z-[1] left-0 [image-rendering:pixelated]"
-              />
+          <BossDefense
+            onAttack={(damageReduction) => {
+              // Calculate actual damage
+              const baseDamage = levelData.boss_attack;
+              const actualDamage = Math.round(
+                baseDamage * (1 - damageReduction)
+              );
 
-              <h1 className="text-2xl font-bold mb-4">Defense</h1>
-              <p className="mb-6 text-center max-w-md">
-                Spam SPACEBAR to raise your shield!
-              </p>
-
-              {/* Shield progress bar */}
-              <div className="shield-progress-container mb-4">
-                <div
-                  className="shield-progress-bar"
-                  style={{ width: `${shieldValue}%` }}
-                ></div>
-              </div>
-
-              {/* Status text based on shield level */}
-              <p
-                className={`text-lg font-bold ${
-                  shieldValue > 75
-                    ? "text-green-500"
-                    : shieldValue > 50
-                      ? "text-blue-400"
-                      : shieldValue > 25
-                        ? "text-yellow-500"
-                        : "text-red-500"
-                }`}
-              >
-                {shieldValue > 75
-                  ? "PERFECT DEFENSE!"
-                  : shieldValue > 50
-                    ? "STRONG DEFENSE!"
-                    : shieldValue > 25
-                      ? "WEAK DEFENSE!"
-                      : "VULNERABLE!"}
-              </p>
-            </div>
-          </div>
+              handleBossAttack(actualDamage);
+            }}
+            countdownTime={countdownTime}
+            soundPlay={(soundId) => SoundManager.play(soundId)}
+            heroRef={heroRef} // Pass the hero ref to BossDefense
+          />
         )}
       </div>
       <div className="w-full h-full flex flex-col justify-between items-center">
-        <div className=" w-full h-20 flex justify-between items-start px-5">
-          <div className="flex flex-col gap-2">
+        <div className=" w-full h-20 flex gap-24 justify-center items-start px-5">
+          <div className="flex flex-col gap-2 pt-2 max-w-[32rem]">
             <span className="text-white font-[Press_Start_2P] text-sm">
-              Boss
+              {levelData.boss_name}
             </span>
             <HealthBar
               value={gameState.boss.health}
               max={gameState.boss.maxHealth}
             />
           </div>
-          <div className="w-40 relative aspect-square flex items-center justify-center">
-            <Image
-              src={signImage}
-              alt="Level Sign"
-              className="w-full h-full object-cover object-center absolute top-0 left-0 -z-[1] [image-rendering:pixelated]"
-            />
-            <div className="text-black font-[Press_Start_2P] text-lg  flex flex-col items-center">
-              <span>Level</span>
-              <span>{levelData.level}</span>
+          <div className="w-full relative flex items-center justify-center">
+            <div className="w-48 relative aspect-square flex items-center justify-center">
+              <Image
+                src={signImage}
+                alt="Level Sign"
+                className="w-full h-full object-cover object-center absolute top-0 left-0 -z-[1] [image-rendering:pixelated]"
+              />
+              <div className="text-black font-[Press_Start_2P] text-lg  flex flex-col items-center">
+                <span>Level</span>
+                <span>{levelData.level}</span>
+              </div>
             </div>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 pt-2 max-w-[32rem]">
             <span className="text-white font-[Press_Start_2P] text-sm">
-              Hero
+              {userData.name}
             </span>
             <HealthBar
               value={gameState.hero.health}
@@ -709,6 +704,14 @@ export default function GamePage({
             <span className="bg-neutral-200/60 p-1 absolute left-10 right-10 backdrop-blur-sm">
               {levelData.boss_name}
             </span>
+
+            {/* Add floating damage text */}
+            {showDamageText && (
+              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-12 text-yellow-300 font-bold text-2xl animate-float-up">
+                {damageText}
+              </div>
+            )}
+
             <Image
               src={monsterImage}
               alt="monster"
@@ -724,8 +727,8 @@ export default function GamePage({
               transition: isHeroAttacking ? "none" : "transform 0.5s ease-out",
             }}
           >
-            <span className="bg-neutral-200/60 p-1 absolute left-10 right-10 backdrop-blur-sm">
-              User Name
+            <span className="bg-neutral-200/60 p-1 absolute left-10 right-10 backdrop-blur-sm w-fit">
+              {userData.name}
             </span>
 
             {/* Add shield visual effect */}
@@ -760,9 +763,7 @@ export default function GamePage({
           {gameState.whoseTurn === "boss" && (
             <GameTimer
               duration={countdownTime / 1000}
-              handleTimeUp={() => {
-                onTimeUp();
-              }}
+              handleTimeUp={() => {}}
             />
           )}
         </div>

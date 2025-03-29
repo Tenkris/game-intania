@@ -99,3 +99,28 @@
 .shield-active {
   animation: shield-active 0.5s ease-in-out infinite;
 }
+
+@keyframes float-up {
+  0% {
+    opacity: 1;
+    transform: translateY(0) translateX(-50%);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50px) translateX(-50%);
+  }
+}
+
+.animate-float-up {
+  animation: float-up 1.5s ease-out forwards;
+}
+
+@keyframes pulse-scale {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.pulse-scale {
+  animation: pulse-scale 0.5s ease-out;
+}

@@ -25,7 +25,7 @@ export default function MusicPlayer({
 
     // Configure audio
     audioRef.current.loop = loop;
-    audioRef.current.volume = 0.3;
+    audioRef.current.volume = 0.2;
     audioRef.current.preload = "auto";
 
     // Add event listeners
