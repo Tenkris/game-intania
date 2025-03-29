@@ -599,30 +599,32 @@ export default function GamePage({
         )}
       </div>
       <div className="w-full h-full flex flex-col justify-between items-center">
-        <div className=" w-full h-20 flex justify-between items-start px-5">
-          <div className="flex flex-col gap-2">
+        <div className=" w-full h-20 grid grid-cols-3 justify-center items-start px-5">
+          <div className="flex flex-col gap-2 pt-2">
             <span className="text-white font-[Press_Start_2P] text-sm">
-              Boss
+              {levelData.boss_name}
             </span>
             <HealthBar
               value={gameState.boss.health}
               max={gameState.boss.maxHealth}
             />
           </div>
-          <div className="w-40 relative aspect-square flex items-center justify-center">
-            <Image
-              src={signImage}
-              alt="Level Sign"
-              className="w-full h-full object-cover object-center absolute top-0 left-0 -z-[1] [image-rendering:pixelated]"
-            />
-            <div className="text-black font-[Press_Start_2P] text-lg  flex flex-col items-center">
-              <span>Level</span>
-              <span>{levelData.level}</span>
+          <div className="w-full relative flex items-center justify-center">
+            <div className="w-48 relative aspect-square flex items-center justify-center">
+              <Image
+                src={signImage}
+                alt="Level Sign"
+                className="w-full h-full object-cover object-center absolute top-0 left-0 -z-[1] [image-rendering:pixelated]"
+              />
+              <div className="text-black font-[Press_Start_2P] text-lg  flex flex-col items-center">
+                <span>Level</span>
+                <span>{levelData.level}</span>
+              </div>
             </div>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 pt-2">
             <span className="text-white font-[Press_Start_2P] text-sm">
-              Hero
+              {userData.name}
             </span>
             <HealthBar
               value={gameState.hero.health}
@@ -659,8 +661,8 @@ export default function GamePage({
               transition: isHeroAttacking ? "none" : "transform 0.5s ease-out",
             }}
           >
-            <span className="bg-neutral-200/60 p-1 absolute left-10 right-10 backdrop-blur-sm">
-              User Name
+            <span className="bg-neutral-200/60 p-1 absolute left-10 right-10 backdrop-blur-sm w-fit">
+              {userData.name}
             </span>
 
             {/* Add shield visual effect */}
