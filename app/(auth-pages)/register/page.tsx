@@ -14,8 +14,9 @@ export default function Signup() {
     const email = formData.get("email")?.toString();
     const password = formData.get("password")?.toString();
     const confirmPassword = formData.get("confirmPassword")?.toString();
+    const name = formData.get("name")?.toString();
 
-    if (!email || !password || !confirmPassword) {
+    if (!email || !password || !confirmPassword || !name) {
       return;
     }
 
@@ -24,7 +25,7 @@ export default function Signup() {
       return;
     }
 
-    const res = await register(email, password)
+    const res = await register(email, password, name)
     
     if (res && "detail" in res) {
       alert(res.detail);
@@ -50,6 +51,13 @@ export default function Signup() {
           name="email"
           id="email"
           placeholder="Email"
+          required
+        />
+        <Input
+          type="text"
+          name="name"
+          id="name"
+          placeholder="name"
           required
         />
         <Input
