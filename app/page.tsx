@@ -4,6 +4,7 @@ import { getMyUser } from "@/utils/api/user";
 import Image from "next/image";
 import Link from "next/link";
 import longButtonImg from "@/app/assets/button/long_button.png";
+import ButtonImage from "@/components/common/ButtonImage";
 
 export default async function HomePage() {
   // Check if user is logged in
@@ -15,11 +16,11 @@ export default async function HomePage() {
 
         {
           userInfo ? (
-            <Link href="/game" className="button w-full text-center">Play</Link>
+            <ButtonImage><Link href="/game" className="w-full text-center">Play</Link></ButtonImage>
           ) : (
             <>
-              <Link href="/login" className="button w-full text-center">Login</Link>
-              <Link href="/register" className="button w-full text-center">Register</Link>
+              <ButtonImage><Link href="/login" className="w-full text-center">Login</Link></ButtonImage>
+              <ButtonImage><Link href="/register" className="w-full text-center">Register</Link></ButtonImage>
             </>
             
           )
@@ -29,9 +30,13 @@ export default async function HomePage() {
         {
           userInfo && (
             <>
-              <Link href="/leaderboard" className="button w-full text-center">Leaderboard</Link>
-              <Link href="/history" className="button w-full text-center">History</Link>
-              <button className="button w-full text-center" onClick={logout}>Log Out</button>
+              <ButtonImage><Link href="/leaderboard" className="w-full text-center">Leaderboard</Link></ButtonImage>
+              <ButtonImage ><Link href="/history" className="w-full text-center">History</Link></ButtonImage>
+              
+              <ButtonImage onClick={logout} alt="Log Out" type = "button" >
+                Log Out
+              </ButtonImage>
+              {/* <button className="button w-full text-center" onClick={logout}>Log Out</button> */}
             </>
           )
         }
