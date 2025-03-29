@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { UpdateUserBody } from "@/types/user";
-import { updateUser } from "@/utils/api/user";
+import { UpdateUserBody, User } from "@/types/user";
+import { updateUser, getMyUser } from "@/utils/api/user";
 import { useRouter } from "next/navigation";
 const mockUpgradables = [
   { label: "+ 20 ATK", attribute: "attack", value: 20 },
@@ -11,10 +11,21 @@ const mockUpgradables = [
 ];
 const Gift = () => {
   const router = useRouter();
-  const handleUpdateUser = async (updateData: UpdateUserBody) => {
-    const response = await updateUser(updateData);
-    if (response) {
-      router.push("/end");
+  const handleUpdateUser = async (field: keyof User, value: number) => {
+    const me = await getMyUser();
+    if (me) {
+      console.log(me);
+      if (typeof me[field] === "number") {
+        const updateData: UpdateUserBody = {
+          [field]: me[field] + value,
+        };
+        const response = await updateUser(updateData);
+        if (response) {
+          router.push("/end");
+        }
+      } else {
+        console.error(`Field '${field}' is not a number or is undefined`);
+      }
     }
   };
 
@@ -29,7 +40,9 @@ const Gift = () => {
               className="flex"
               variant={"default"}
               size={"lg"}
-              onClick={() => handleUpdateUser({ [item.attribute]: item.value })}
+              onClick={() =>
+                handleUpdateUser(item.attribute as keyof User, item.value)
+              }
             >
               {item.label}
             </Button>
