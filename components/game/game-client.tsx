@@ -9,6 +9,7 @@ import signImage from "@/app/assets/hud/sign.webp";
 import signTallImage from "@/app/assets/hud/sign-tall.webp";
 import buttonImage from "@/app/assets/hud/button-wide.webp";
 import { LevelData, QuestionData } from "@/types/level";
+import GameTimer from "../timer/game-timer";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:3000/api/v1";
@@ -131,6 +132,11 @@ export default function GamePage({
     }
   }
 
+  function onTimeUp() {
+    console.log("Time's up!");
+    // Handle time up (e.g., show message, update game state)
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       const questionId = levelData.question_ids[gameState.currentQuestionIndex];
@@ -234,6 +240,8 @@ export default function GamePage({
                           className="px-4 py-2 rounded relative text-black w-full z-10"
                           onClick={() => {
                             // Handle choice click
+                            onSelectChoice(index);
+                            console.log("Selected choice (click):", choice);
                           }}
                         >
                           {choice}
@@ -252,6 +260,20 @@ export default function GamePage({
           </div>
         </div>
       </div>
+      {
+        (!loading && gameState.question) && (
+          <div className="fixed w-full z-50 flex justify-center items-center bottom-0">
+            <GameTimer 
+              duration={gameState.question.time_countdown} 
+              handleTimeUp={() => {
+                // Handle time up
+                onTimeUp();
+              }} 
+            />
+          </div>
+        )
+      }
+      
     </div>
   );
 }
