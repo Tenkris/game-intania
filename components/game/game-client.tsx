@@ -392,7 +392,7 @@ export default function GamePage({
     performHeroAttack(multiplier);
 
     // Update game state with damage based on multiplier
-    const baseDamage = 10; // Base damage value
+    const baseDamage = gameStateRef.current.hero.attack; // Base damage value
     const damage = Math.round(baseDamage * multiplier);
 
     setGameState((prevState) => ({
