@@ -180,6 +180,11 @@ function BossDefense({
     const handleKeydown = (event: KeyboardEvent) => {
       if (event.code === "Space") {
         event.preventDefault();
+        if (event.repeat){
+          console.log("You are not allowed to hold the spacebar for guarding.");
+          return;
+        }
+        
         // Small debounce to prevent too many rapid calls (20ms is still responsive but prevents overload)
         const now = Date.now();
         if (now - lastSpacebarPressRef.current > 20) {
