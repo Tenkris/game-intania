@@ -93,7 +93,7 @@ export default function GamePage({
     boss: BossProperty;
     question: QuestionData | null;
     currentQuestionIndex: number;
-    whoseTurn: "hero" | "boss";
+    whoseTurn: "hero" | "boss" | "gameOver";
   }>({
     hero: {
       defense: userData.defense,
@@ -570,6 +570,7 @@ export default function GamePage({
     if (gameState.boss.health <= 0) {
       // Handle boss defeat
       console.log("Boss defeated!");
+
       const updatedUserData: UpdateUserBody = {
         ...userData,
         level_id: levelData.level + 1,
@@ -580,6 +581,13 @@ export default function GamePage({
         setShowLevelComplete(true);
         setCompleted(true);
       });
+
+      // set whooseTurn to gameOver
+      setGameState((prevState) => ({
+        ...prevState,
+        whoseTurn: "gameOver",
+      }));
+
       // Show victory animation or message
       // Reset game state or redirect to another page
     } else if (gameState.hero.health <= 0) {
@@ -589,6 +597,12 @@ export default function GamePage({
       // Show defeat animation or message
       // Show Level complete modal
       setShowLevelComplete(true);
+
+      // set whooseTurn to gameOver
+      setGameState((prevState) => ({
+        ...prevState,
+        whoseTurn: "gameOver",
+      }));
     }
   }, [gameState.boss.health, gameState.hero.health]);
 
