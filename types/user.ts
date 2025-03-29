@@ -1,12 +1,13 @@
 export interface User {
-  email: string;
-  level_id: number;
-  user_image: string;
-  attack: number;
-  defense: number;
-  speed: number;
-  critical: number;
-  hp: number;
+    email: string,
+    level_id: number
+    user_image: string,
+    attack: number,
+    defense: number,
+    speed: number,
+    critical: number,
+    hp: number,
+    name: string | null,
 }
 
 export interface UserWithToken {
