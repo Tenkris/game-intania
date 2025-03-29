@@ -62,7 +62,7 @@ export default function Signup() {
           placeholder="Confirm Password"
           required
         />
-        <button type="submit" className="button">Login</button>
+        <button type="submit" className="button">Create Account</button>
         <p className="text-sm text-muted-foreground">
           Already have an account?{" "}
           <Link href="/login" className="text-blue-500 hover:underline">
