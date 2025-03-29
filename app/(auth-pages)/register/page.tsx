@@ -2,7 +2,6 @@
 
 import BackButton from "@/components/common/BackButton";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { register } from "@/utils/api/auth";
 import Link from "next/link";
 
