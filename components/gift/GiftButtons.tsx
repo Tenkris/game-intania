@@ -16,7 +16,7 @@ const GiftButtons = () => {
 
   const handleUpdateUser = async (field: keyof User, value: number) => {
     const me = await getMyUser();
-    
+
     if (me) {
       console.log(me);
       if (typeof me[field] === "number") {

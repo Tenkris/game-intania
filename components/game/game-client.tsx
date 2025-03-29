@@ -16,6 +16,7 @@ import { UpdateUserBody, User } from "@/types/user";
 import BossDefense from "./client-defense";
 import { updateUser } from "@/utils/api/user";
 import CriticalHit from "./critical-hit";
+import LevelComplete from "./level-complete";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:3000/api/v1";
@@ -116,6 +117,8 @@ export default function GamePage({
   const router = useRouter();
 
   const [showCriticalHit, setShowCriticalHit] = useState(false);
+  const [showLevelComplete, setShowLevelComplete] = useState(false);
+  const [completed, setCompleted] = useState(false);
   const [damageMultiplier, setDamageMultiplier] = useState(1.0);
   const [showDamageText, setShowDamageText] = useState(false);
   const [damageText, setDamageText] = useState("");
@@ -562,7 +565,9 @@ export default function GamePage({
         level_id: levelData.level + 1,
       };
       updateUser(updatedUserData).then(() => {
-        router.push("/gift");
+        // router.push("/gift");
+        setIsTimerStarted(false);
+        setShowLevelComplete(true);
       });
       // Show victory animation or message
       // Reset game state or redirect to another page
@@ -570,10 +575,11 @@ export default function GamePage({
       // Handle hero defeat
       console.log("Hero defeated!");
       // Redirect to home
-      router.push("/end");
-
+      // router.push("/end");
+      setIsTimerStarted(false);
       // Show defeat animation or message
       // Reset game state or redirect to another page
+      setShowLevelComplete(true);
     }
   }, [gameState.boss.health, gameState.hero.health]);
 
@@ -593,51 +599,55 @@ export default function GamePage({
       <div
         className={`absolute w-full h-full z-30 flex justify-center items-center ${isHeroAttacking ? "hidden" : ""}`}
       >
-        {gameState.whoseTurn === "hero" && !showCriticalHit && (
-          <div className="w-[40rem] h-[30rem] flex flex-col justify-center items-center rounded-lg relative">
-            <Image
-              src={signTallImage}
-              alt="Button Sign"
-              className="w-full h-full absolute  top-0 -z-[1] left-0 [image-rendering:pixelated]"
-            />
-            <h1 className="text-2xl font-bold mb-4">Question</h1>
-            {loading ? (
-              <p>Loading...</p>
-            ) : (
-              <div className="flex flex-col items-center">
-                <p className="text-lg">{gameState.question?.question}</p>
-                {choices.current && (
-                  <div className="flex flex-col gap-2 mt-4">
-                    {choices.current.map((choice, index) => (
-                      <div className="relative w-full" key={index}>
-                        <button
-                          className="px-4 py-2 rounded relative text-black w-full z-10"
-                          onClick={() => {
-                            // Handle choice click
-                            onSelectChoice(index);
-                            console.log("Selected choice (click):", choice);
-                          }}
-                        >
-                          {choice}
-                        </button>
-                        <Image
-                          src={buttonImage}
-                          alt="Button Sign"
-                          className="w-full h-full absolute  top-0 left-0 [image-rendering:pixelated]"
-                        ></Image>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
+        {gameState.whoseTurn === "hero" &&
+          !showCriticalHit &&
+          !showLevelComplete && (
+            <div className="w-[40rem] h-[30rem] flex flex-col justify-center items-center rounded-lg relative">
+              <Image
+                src={signTallImage}
+                alt="Button Sign"
+                className="w-full h-full absolute  top-0 -z-[1] left-0 [image-rendering:pixelated]"
+              />
+              <h1 className="text-2xl font-bold mb-4">Question</h1>
+              {loading ? (
+                <p>Loading...</p>
+              ) : (
+                <div className="flex flex-col items-center">
+                  <p className="text-lg">{gameState.question?.question}</p>
+                  {choices.current && (
+                    <div className="flex flex-col gap-2 mt-4">
+                      {choices.current.map((choice, index) => (
+                        <div className="relative w-full" key={index}>
+                          <button
+                            className="px-4 py-2 rounded relative text-black w-full z-10"
+                            onClick={() => {
+                              // Handle choice click
+                              onSelectChoice(index);
+                              console.log("Selected choice (click):", choice);
+                            }}
+                          >
+                            {choice}
+                          </button>
+                          <Image
+                            src={buttonImage}
+                            alt="Button Sign"
+                            className="w-full h-full absolute  top-0 left-0 [image-rendering:pixelated]"
+                          ></Image>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
         {/* Critical Hit Component */}
         {showCriticalHit && (
           <CriticalHit onComplete={handleCriticalHitComplete} />
         )}
+
+        {showLevelComplete && <LevelComplete LevelCompleted={completed} />}
 
         {gameState.whoseTurn === "boss" && (
           <BossDefense
