@@ -1,7 +1,4 @@
 import Image from "next/image";
-import fullHeart from "@/app/assets/hud/hardcore_full.png";
-import halfHeart from "@/app/assets/hud/hardcore_half.png";
-import emptyHeart from "@/app/assets/hud/container_hardcore.png";
 import healthBar from "@/app/assets/hud/health-bar.webp";
 
 export default function HealthBar({

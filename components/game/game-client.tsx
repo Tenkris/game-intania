@@ -602,7 +602,7 @@ export default function GamePage({
         <div className=" w-full h-20 grid grid-cols-3 justify-center items-start px-5">
           <div className="flex flex-col gap-2 pt-2">
             <span className="text-white font-[Press_Start_2P] text-sm">
-              Boss
+              {levelData.boss_name}
             </span>
             <HealthBar
               value={gameState.boss.health}
@@ -624,7 +624,7 @@ export default function GamePage({
           </div>
           <div className="flex flex-col gap-2 pt-2">
             <span className="text-white font-[Press_Start_2P] text-sm">
-              Hero
+              {userData.name}
             </span>
             <HealthBar
               value={gameState.hero.health}
@@ -661,8 +661,8 @@ export default function GamePage({
               transition: isHeroAttacking ? "none" : "transform 0.5s ease-out",
             }}
           >
-            <span className="bg-neutral-200/60 p-1 absolute left-10 right-10 backdrop-blur-sm">
-              User Name
+            <span className="bg-neutral-200/60 p-1 absolute left-10 right-10 backdrop-blur-sm w-fit">
+              {userData.name}
             </span>
 
             {/* Add shield visual effect */}
