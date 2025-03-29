@@ -599,8 +599,8 @@ export default function GamePage({
         )}
       </div>
       <div className="w-full h-full flex flex-col justify-between items-center">
-        <div className=" w-full h-20 grid grid-cols-3 justify-center items-start px-5">
-          <div className="flex flex-col gap-2 pt-2">
+        <div className=" w-full h-20 flex gap-24 justify-center items-start px-5">
+          <div className="flex flex-col gap-2 pt-2 max-w-[32rem]">
             <span className="text-white font-[Press_Start_2P] text-sm">
               {levelData.boss_name}
             </span>
@@ -622,7 +622,7 @@ export default function GamePage({
               </div>
             </div>
           </div>
-          <div className="flex flex-col gap-2 pt-2">
+          <div className="flex flex-col gap-2 pt-2 max-w-[32rem]">
             <span className="text-white font-[Press_Start_2P] text-sm">
               {userData.name}
             </span>
