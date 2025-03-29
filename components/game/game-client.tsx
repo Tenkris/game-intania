@@ -16,6 +16,7 @@ import { UpdateUserBody, User } from "@/types/user";
 import BossDefense from "./client-defense";
 import { updateUser } from "@/utils/api/user";
 import CriticalHit from "./critical-hit";
+import PlayerStats from "./player-stats";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:3000/api/v1";
@@ -72,7 +73,9 @@ export default function GamePage({
     attack: number;
   }
 
-  interface HeroProperty extends EntityProperty {}
+  interface HeroProperty extends EntityProperty {
+    defense: number;
+  }
 
   interface BossProperty extends EntityProperty {}
 
@@ -90,6 +93,7 @@ export default function GamePage({
     whoseTurn: "hero" | "boss";
   }>({
     hero: {
+      defense: userData.defense,
       health: userData.hp,
       maxHealth: userData.hp,
       attack: userData.attack,
@@ -189,6 +193,9 @@ export default function GamePage({
         onSelectChoice(3);
       } else if (event.key === "5" || event.code === "Digit5") {
         onSelectChoice(4);
+      } else if (event.key === "Escape") {
+        // Handle escape key
+        router.push("/");
       }
     },
     [gameState.whoseTurn]
@@ -281,6 +288,7 @@ export default function GamePage({
         health: data.hp,
         attack: data.attack,
         maxHealth: data.hp,
+        defense: data.defense,
       };
 
       setGameState((prevState) => ({
@@ -656,6 +664,7 @@ export default function GamePage({
           />
         )}
       </div>
+      {/* Stats */}
       <div className="w-full h-full flex flex-col justify-between items-center">
         <div className=" w-full h-20 flex gap-24 justify-center items-start px-5">
           <div className="flex flex-col gap-2 pt-2 max-w-[32rem]">
@@ -768,6 +777,10 @@ export default function GamePage({
           )}
         </div>
       )}
+      <PlayerStats
+        attack={gameState.hero.attack}
+        defense={gameState.hero.defense}
+      />
     </div>
   );
 }
