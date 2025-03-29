@@ -1,7 +1,9 @@
 "use server";
 
 import { LevelData } from "@/types/level";
+
 import { UpdateUserBody, User } from "@/types/user";
+
 import { cookies } from "next/headers";
 
 const API_URL =
