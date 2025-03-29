@@ -43,7 +43,7 @@ export default function Signup() {
       >
         <div className="flex justify-between items-center w-full p-2 lg:p-4">
           <BackButton href="/" />
-          <h1 className="text-2xl font-bold">Register</h1>
+          <h1 className="text-lg font-bold">Register</h1>
           <div className="w-6 h-6"></div>
         </div>
         <Input
@@ -74,13 +74,13 @@ export default function Signup() {
           placeholder="Confirm Password"
           required
         />
-        <p className="text-sm text-muted-foreground">
+        <p className="text-xs text-center">
           Already have an account?{" "}
           <Link href="/login" className="text-blue-500 hover:underline">
             Login
           </Link>
         </p>
-        <button type="submit" className="button">Create Account</button>
+        <button type="submit" className="button">Register</button>
       </form>
     </div>
   );

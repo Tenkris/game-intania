@@ -55,10 +55,10 @@ export default function Leaderboard({ myUser }: { myUser: User }) {
     }, [])
 
     return (
-        <div className="card w-11/12 lg:w-2/5 items-center justify-center">
+        <div className="card w-11/12 lg:w-2/5 items-center justify-center text-xs">
             <div className="flex justify-between items-center w-full p-2 lg:p-4">
                 <BackButton href="/" />
-                <h1 className="text-2xl font-bold">Leaderboard</h1>
+                <h1 className="text-lg font-bold">Leaderboard</h1>
                 <ReloadButton onClick={fetchLeaderboard} />
             </div>
             {
@@ -94,7 +94,7 @@ export default function Leaderboard({ myUser }: { myUser: User }) {
             {
                 isLoading ? (
                     <div className="flex flex-col items-center justify-center w-full h-full p-4">
-                        <p className="text-lg font-semibold">Loading...</p>
+                        <p className="text-xs font-semibold">Loading...</p>
                         <div className="loader"></div>
                     </div>
                 ) : (

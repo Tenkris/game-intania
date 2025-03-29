@@ -30,12 +30,12 @@ export default function Login() {
       <form className="card w-96 items-center justify-center" onSubmit={handleLogin}>
         <div className="flex justify-between items-center w-full p-2 lg:p-4">
           <BackButton href="/" />
-          <h1 className="text-2xl font-bold">Login</h1>
+          <h1 className="text-lg font-bold">Login</h1>
           <div className="w-6 h-6"></div>
         </div>
         <Input name="email" type="email" placeholder="Email" className="input" required />
         <Input name="password" type="password" placeholder="Password" className="input" required />
-        <p className="text-sm">
+        <p className="text-xs text-center">
           Don't have an account?{" "}
           <Link href="/register" className="text-blue-500 hover:underline">
             Register
