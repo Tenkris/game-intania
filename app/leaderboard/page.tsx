@@ -18,7 +18,7 @@ export default async function LeaderboardPage() {
 
     return (
         <div className="w-full h-full flex flex-col justify-center items-center gap-5">
-            <Leaderboard />
+            <Leaderboard myUser={userInfo} />
         </div>
     );
 }
