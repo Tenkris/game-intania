@@ -223,7 +223,7 @@ export default function GamePage({
     SoundManager.play("heroAttack");
 
     // Calculate and show damage text
-    const baseDamage = 10; // Base damage value
+    const baseDamage = gameStateRef.current.hero.attack; // Base damage value
     const damage = Math.round(baseDamage * multiplier);
     setDamageText(`${damage} (${multiplier.toFixed(1)}x)`);
     setShowDamageText(true);
