@@ -4,6 +4,7 @@ import { useState } from "react";
 import heroImage from "@/app/assets/character/hero.png";
 import monsterImage from "@/app/assets/character/monster.png";
 import HealthBar from "@/components/health/health-bar";
+import Image from "next/image";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:3000/api/v1";
