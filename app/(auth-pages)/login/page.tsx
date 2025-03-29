@@ -3,6 +3,7 @@ import BackButton from "@/components/common/BackButton";
 import { Input } from "@/components/ui/input";
 import { login } from "@/utils/api/auth";
 import Link from "next/link";
+import ButtonImage from "@/components/common/ButtonImage";
 
 export default function Login() {
   
@@ -41,7 +42,10 @@ export default function Login() {
             Register
           </Link>
         </p>
-        <button type="submit" className="button">Login</button>
+        <ButtonImage alt="button"  type="submit" >
+          login
+        </ButtonImage>
+        
         
       </form>
       

@@ -1,9 +1,11 @@
 "use client";
 
 import BackButton from "@/components/common/BackButton";
+import ButtonImage from "@/components/common/ButtonImage";
 import { Input } from "@/components/ui/input";
 import { register } from "@/utils/api/auth";
 import Link from "next/link";
+import longButtonImg from "@/app/assets/button/long_button.png";
 
 export default function Signup() {
 
@@ -80,7 +82,8 @@ export default function Signup() {
             Login
           </Link>
         </p>
-        <button type="submit" className="button">Create Account</button>
+        <ButtonImage type="submit" alt = "Create Account">Create Account</ButtonImage>
+        {/* <button type="submit" className="button">Create Account</button> */}
       </form>
     </div>
   );
