@@ -1,5 +1,5 @@
 import GameClient from "@/components/game/game-client";
-import { getLevelData } from "@/utils/api/user";
+import { getLevelData, getMyUser } from "@/utils/api/user";
 import { get } from "http";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
@@ -12,8 +12,9 @@ export default async function GamePage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("token");
 
+  const userData = await getMyUser();
   const levelData = await getLevelData({
-    level: "1",
+    level: userData?.level_id.toString() || "",
   });
   if (!levelData) {
     return <div>Level not found</div>;
@@ -21,10 +22,17 @@ export default async function GamePage() {
   if (!token) {
     return <div>Token not found</div>;
   }
+  if (!userData) {
+    return <div>User not found</div>;
+  }
 
   return (
     <Suspense fallback={<span>Loading..</span>}>
-      <GameClient levelData={levelData} cookie={token.value} />
+      <GameClient
+        levelData={levelData}
+        cookie={token.value}
+        userData={userData}
+      />
     </Suspense>
   );
 }
