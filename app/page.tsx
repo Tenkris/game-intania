@@ -12,7 +12,7 @@ export default async function HomePage() {
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center gap-5">
-      <div className="card w-96 items-center justify-center">
+      <div className="flex flex-col gap-3 w-96 items-center justify-center">
 
         {
           userInfo ? (

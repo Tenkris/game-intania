@@ -50,14 +50,11 @@ const GiftButtons = () => {
           {item.label}
         </ButtonImage>
       ))}
-      <Button
-          className="flex"
-          variant={"default"}
-          size={"lg"}
+      <ButtonImage
           onClick={gambling}
         >
         Gambling
-      </Button>
+      </ButtonImage>
     </div>
   );
 };

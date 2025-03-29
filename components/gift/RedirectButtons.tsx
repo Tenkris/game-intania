@@ -13,7 +13,7 @@ const RedirectButton = () => {
       <Button onClick={() => router.push("/game")}>Next Level</Button> */}
       <ButtonImage onClick={() => router.push("/")}>Home</ButtonImage>
       <ButtonImage>
-        <Link href="/game">Next Level</Link>
+        <Link href="/game">Continue</Link>
       </ButtonImage>
     </div>
   );
