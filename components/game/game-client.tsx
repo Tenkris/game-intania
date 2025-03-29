@@ -11,6 +11,8 @@ import buttonImage from "@/app/assets/hud/button-wide.webp";
 import { LevelData, QuestionData } from "@/types/level";
 import GameTimer from "../timer/game-timer";
 import "@/app/game.css";
+import { redirect } from "next/navigation";
+import { User } from "@/types/user";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:3000/api/v1";
@@ -60,9 +62,23 @@ export default function GamePage({
   const heroAnimationRef = useRef<number | null>(null);
   const heroRef = useRef<HTMLDivElement>(null);
 
+  interface EntityProperty {
+    health: number;
+    maxHealth: number;
+    attack: number;
+  }
+
+  interface HeroProperty extends EntityProperty {
+    
+  }
+
+  interface BossProperty extends EntityProperty {
+    
+  }
+
   const [gameState, setGameState] = useState<{
-    hero: { health: number; maxHealth: number };
-    boss: { health: number; maxHealth: number };
+    hero: HeroProperty;
+    boss: BossProperty;
     question: QuestionData | null;
     currentQuestionIndex: number;
     whoseTurn: "hero" | "boss";
@@ -70,10 +86,12 @@ export default function GamePage({
     hero: {
       health: 80,
       maxHealth: 100,
+      attack: 10,
     },
     boss: {
       health: levelData.boss_hp,
       maxHealth: levelData.boss_hp,
+      attack: levelData.boss_attack,
     },
     question: null,
     currentQuestionIndex: 0,
@@ -236,6 +254,35 @@ export default function GamePage({
     heroAnimationRef.current = requestAnimationFrame(animate);
   };
 
+  async function featchHeroStats() {
+    try {
+      const response = await fetch(`${API_URL}/users/me`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${cookie}`,
+        },
+      });
+      if (!response.ok) {
+        redirect("/login");
+      }
+      const data : User = (await response.json()).data;
+
+      const heroStats : HeroProperty = {
+        health: data.hp,
+        attack: data.attack,
+        maxHealth: data.hp,
+      };
+      
+      setGameState((prevState) => ({
+        ...prevState,
+        hero: heroStats,
+      }));
+    } catch (error) {
+      console.error("Error fetching hero stats:", error);
+    }
+  }
+
+
   const handleBossAttack = () => {
     // Calculate damage based on shield value
     // More shield = less damage
@@ -370,6 +417,7 @@ export default function GamePage({
     };
 
     fetchData();
+    featchHeroStats();
 
     console.log("levelData", gameState);
   }, [levelData]);
