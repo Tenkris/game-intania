@@ -1,0 +1,4 @@
+.progress {
+    transition-duration: 1s;
+    transition-timing-function: linear;
+}
