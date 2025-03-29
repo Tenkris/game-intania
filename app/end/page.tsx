@@ -10,7 +10,8 @@ const End = () => {
         <h1 className="text-center  text-xl">Play again?</h1>
         <div className="flex flex-row w-full items-center justify-center gap-4">
           <Button onClick={() => router.push("/")}>Home</Button>
-          <Button onClick={() => router.push("/game")}>Next Level</Button>
+          {/* might need to fix the game path later (get user level -> level+1?) */}
+          <Button onClick={() => router.push("/game")}>Next Level</Button> 
         </div>
       </div>
     </div>
