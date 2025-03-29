@@ -6,6 +6,7 @@ import tutorial1Image from "@/app/assets/tutorial/tutorial_1.png";
 import tutorial2Image from "@/app/assets/tutorial/tutorial_2.png";
 import tutorial3Image from "@/app/assets/tutorial/tutorial_3.png";
 import Image from "next/image";
+import ButtonImage from "@/components/common/ButtonImage";
 
 export default function TutorialPage() {
   const steps = [
@@ -60,20 +61,26 @@ export default function TutorialPage() {
         {/* Navigation */}
         <div className="w-full border-b border-gray-300"></div>
         <div className="w-full flex justify-between items-center px-4 py-2 text-xs">
-          <button
+          {/* <button
             className={`btn ${currentStep > 0 ? "btn-primary" : "btn-disabled opacity-50"}`}
             onClick={goToPreviousStep}
             disabled={currentStep === 0}
           >
             Previous
-          </button>
-          <button
+          </button> */}
+          <ButtonImage onClick={goToPreviousStep} disabled={currentStep === 0} >
+            Previous
+          </ButtonImage>
+          {/* <button
             className={`btn ${currentStep < steps.length - 1 ? "btn-primary" : "btn-disabled opacity-50"}`}
             onClick={goToNextStep}
             disabled={currentStep === steps.length - 1}
           >
             Next
-          </button>
+          </button> */}
+          <ButtonImage onClick={goToNextStep} disabled={currentStep === steps.length - 1} >
+            Next
+          </ButtonImage>
         </div>
       </div>
     </div>
