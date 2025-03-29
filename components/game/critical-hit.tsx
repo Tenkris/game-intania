@@ -10,13 +10,13 @@ interface CriticalHitProps {
 
 export default function CriticalHit({ onComplete }: CriticalHitProps) {
   const [position, setPosition] = useState(0);
-  const [direction, setDirection] = useState(1); // 1 = right, -1 = left
   const [isActive, setIsActive] = useState(true);
   const [multiplier, setMultiplier] = useState(1.0);
   const [showResult, setShowResult] = useState(false);
   const [currentZone, setCurrentZone] = useState<string>("MISS");
   const animationRef = useRef<number | null>(null);
   const lastTimestamp = useRef<number>(0);
+  const direction = useRef<number>(1); // 1 = right, -1 = left
 
   // Constants for the game
   const MAX_POSITION = 100;
@@ -55,17 +55,16 @@ export default function CriticalHit({ onComplete }: CriticalHitProps) {
 
     // Move the position based on direction and speed
     setPosition((prev) => {
-      const newPos = prev + direction * SPEED * deltaTime;
-
+      const newPos = prev + direction.current * SPEED * deltaTime;
       // Update current zone label for live feedback
       setCurrentZone(getZoneLabel(newPos));
 
       // Reverse direction if hitting the edges
       if (newPos >= MAX_POSITION) {
-        setDirection(-1);
+        direction.current = -1
         return MAX_POSITION;
       } else if (newPos <= MIN_POSITION) {
-        setDirection(1);
+        direction.current = 1
         return MIN_POSITION;
       }
 
