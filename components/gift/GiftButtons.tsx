@@ -4,6 +4,8 @@ import { UpdateUserBody, User } from "@/types/user";
 import { updateUser, getMyUser } from "@/utils/api/user";
 import { useRouter } from "next/navigation";
 import ButtonImage from "@/components/common/ButtonImage";
+import GamblingCarousel from "./Carousel";
+import { useEffect, useState } from "react";
 
 const mockUpgradables = [
   { label: "+ 20 ATK", attribute: "attack", value: 20 },
@@ -13,6 +15,8 @@ const mockUpgradables = [
 ];
 const GiftButtons = () => {
   const router = useRouter();
+
+  const [isGambling, setIsGambling] = useState(false);
 
   const handleUpdateUser = async (field: keyof User, value: number) => {
     const me = await getMyUser();
@@ -35,8 +39,10 @@ const GiftButtons = () => {
   };
 
   const gambling = async () => {
-
+    setIsGambling(true);
   }
+
+
 
   return (
     <div className="grid grid-cols-2 gap-4">
@@ -55,6 +61,11 @@ const GiftButtons = () => {
         >
         Gambling
       </ButtonImage>
+      {
+        (isGambling) && (
+          <GamblingCarousel updateUser={handleUpdateUser} />
+        )
+      }
     </div>
   );
 };
