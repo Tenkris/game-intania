@@ -735,7 +735,7 @@ export default function GamePage({
               transition: isBossAttacking ? "none" : "transform 0.5s ease-out",
             }}
           >
-            <span className="bg-neutral-200/60 p-1 absolute left-10 right-10 backdrop-blur-sm">
+            <span className="bg-neutral-200/60 p-1 absolute left-10 right-10 backdrop-blur-sm text-center" >
               {levelData.boss_name}
             </span>
 
