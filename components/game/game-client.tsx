@@ -17,6 +17,10 @@ import BossDefense from "./client-defense";
 import { updateUser } from "@/utils/api/user";
 import CriticalHit from "./critical-hit";
 
+import LevelComplete from "./level-complete";
+
+import PlayerStats from "./player-stats";
+
 const API_URL =
   process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:3000/api/v1";
 
@@ -72,7 +76,9 @@ export default function GamePage({
     attack: number;
   }
 
-  interface HeroProperty extends EntityProperty {}
+  interface HeroProperty extends EntityProperty {
+    defense: number;
+  }
 
   interface BossProperty extends EntityProperty {}
 
@@ -90,6 +96,7 @@ export default function GamePage({
     whoseTurn: "hero" | "boss";
   }>({
     hero: {
+      defense: userData.defense,
       health: userData.hp,
       maxHealth: userData.hp,
       attack: userData.attack,
@@ -116,6 +123,8 @@ export default function GamePage({
   const router = useRouter();
 
   const [showCriticalHit, setShowCriticalHit] = useState(false);
+  const [showLevelComplete, setShowLevelComplete] = useState(false);
+  const [completed, setCompleted] = useState(false);
   const [damageMultiplier, setDamageMultiplier] = useState(1.0);
   const [showDamageText, setShowDamageText] = useState(false);
   const [damageText, setDamageText] = useState("");
@@ -189,6 +198,9 @@ export default function GamePage({
         onSelectChoice(3);
       } else if (event.key === "5" || event.code === "Digit5") {
         onSelectChoice(4);
+      } else if (event.key === "Escape") {
+        // Handle escape key
+        router.push("/");
       }
     },
     [gameState.whoseTurn]
@@ -281,6 +293,7 @@ export default function GamePage({
         health: data.hp,
         attack: data.attack,
         maxHealth: data.hp,
+        defense: data.defense,
       };
 
       setGameState((prevState) => ({
@@ -562,18 +575,20 @@ export default function GamePage({
         level_id: levelData.level + 1,
       };
       updateUser(updatedUserData).then(() => {
-        router.push("/gift");
+        setIsTimerStarted(false);
+        // Show Level complete modal
+        setShowLevelComplete(true);
+        setCompleted(true);
       });
       // Show victory animation or message
       // Reset game state or redirect to another page
     } else if (gameState.hero.health <= 0) {
       // Handle hero defeat
       console.log("Hero defeated!");
-      // Redirect to home
-      router.push("/end");
-
+      setIsTimerStarted(false);
       // Show defeat animation or message
-      // Reset game state or redirect to another page
+      // Show Level complete modal
+      setShowLevelComplete(true);
     }
   }, [gameState.boss.health, gameState.hero.health]);
 
@@ -593,51 +608,55 @@ export default function GamePage({
       <div
         className={`absolute w-full h-full z-30 flex justify-center items-center ${isHeroAttacking ? "hidden" : ""}`}
       >
-        {gameState.whoseTurn === "hero" && !showCriticalHit && (
-          <div className="w-[40rem] h-[30rem] flex flex-col justify-center items-center rounded-lg relative">
-            <Image
-              src={signTallImage}
-              alt="Button Sign"
-              className="w-full h-full absolute  top-0 -z-[1] left-0 [image-rendering:pixelated]"
-            />
-            <h1 className="text-2xl font-bold mb-4">Question</h1>
-            {loading ? (
-              <p>Loading...</p>
-            ) : (
-              <div className="flex flex-col items-center">
-                <p className="text-lg">{gameState.question?.question}</p>
-                {choices.current && (
-                  <div className="flex flex-col gap-2 mt-4">
-                    {choices.current.map((choice, index) => (
-                      <div className="relative w-full" key={index}>
-                        <button
-                          className="px-4 py-2 rounded relative text-black w-full z-10"
-                          onClick={() => {
-                            // Handle choice click
-                            onSelectChoice(index);
-                            console.log("Selected choice (click):", choice);
-                          }}
-                        >
-                          {choice}
-                        </button>
-                        <Image
-                          src={buttonImage}
-                          alt="Button Sign"
-                          className="w-full h-full absolute  top-0 left-0 [image-rendering:pixelated]"
-                        ></Image>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
+        {gameState.whoseTurn === "hero" &&
+          !showCriticalHit &&
+          !showLevelComplete && (
+            <div className="w-[40rem] h-[30rem] flex flex-col justify-center items-center rounded-lg relative">
+              <Image
+                src={signTallImage}
+                alt="Button Sign"
+                className="w-full h-full absolute  top-0 -z-[1] left-0 [image-rendering:pixelated]"
+              />
+              <h1 className="text-2xl font-bold mb-4">Question</h1>
+              {loading ? (
+                <p>Loading...</p>
+              ) : (
+                <div className="flex flex-col items-center">
+                  <p className="text-lg">{gameState.question?.question}</p>
+                  {choices.current && (
+                    <div className="flex flex-col gap-2 mt-4">
+                      {choices.current.map((choice, index) => (
+                        <div className="relative w-full" key={index}>
+                          <button
+                            className="px-4 py-2 rounded relative text-black w-full z-10"
+                            onClick={() => {
+                              // Handle choice click
+                              onSelectChoice(index);
+                              console.log("Selected choice (click):", choice);
+                            }}
+                          >
+                            {choice}
+                          </button>
+                          <Image
+                            src={buttonImage}
+                            alt="Button Sign"
+                            className="w-full h-full absolute  top-0 left-0 [image-rendering:pixelated]"
+                          ></Image>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
         {/* Critical Hit Component */}
         {showCriticalHit && (
           <CriticalHit onComplete={handleCriticalHitComplete} />
         )}
+
+        {showLevelComplete && <LevelComplete LevelCompleted={completed} />}
 
         {gameState.whoseTurn === "boss" && (
           <BossDefense
@@ -656,6 +675,7 @@ export default function GamePage({
           />
         )}
       </div>
+      {/* Stats */}
       <div className="w-full h-full flex flex-col justify-between items-center">
         <div className=" w-full h-20 flex gap-24 justify-center items-start px-5">
           <div className="flex flex-col gap-2 pt-2 max-w-[32rem]">
@@ -768,6 +788,10 @@ export default function GamePage({
           )}
         </div>
       )}
+      <PlayerStats
+        attack={gameState.hero.attack}
+        defense={gameState.hero.defense}
+      />
     </div>
   );
 }
