@@ -16,11 +16,11 @@ export default async function HomePage() {
 
         {
           userInfo ? (
-            <ButtonImage><Link href="/game" className="w-full text-center">Play</Link></ButtonImage>
+            <ButtonImage><Link href="/game" className="w-full text-center block">Play</Link></ButtonImage>
           ) : (
             <>
-              <ButtonImage><Link href="/login" className="w-full text-center">Login</Link></ButtonImage>
-              <ButtonImage><Link href="/register" className="w-full text-center">Register</Link></ButtonImage>
+              <ButtonImage><Link href="/login" className="w-full text-center block">Login</Link></ButtonImage>
+              <ButtonImage><Link href="/register" className="w-full text-center block">Register</Link></ButtonImage>
             </>
             
           )
@@ -30,8 +30,8 @@ export default async function HomePage() {
         {
           userInfo && (
             <>
-              <ButtonImage><Link href="/leaderboard" className="w-full text-center">Leaderboard</Link></ButtonImage>
-              <ButtonImage ><Link href="/history" className="w-full text-center">History</Link></ButtonImage>
+              <ButtonImage><Link href="/leaderboard" className="w-full text-center block">Leaderboard</Link></ButtonImage>
+              <ButtonImage ><Link href="/history" className="w-full text-center block">History</Link></ButtonImage>
               
               <ButtonImage onClick={logout} alt="Log Out" type = "button" >
                 Log Out
