@@ -568,6 +568,7 @@ export default function GamePage({
         // router.push("/gift");
         setIsTimerStarted(false);
         setShowLevelComplete(true);
+        setCompleted(true);
       });
       // Show victory animation or message
       // Reset game state or redirect to another page
