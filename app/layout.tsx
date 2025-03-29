@@ -1,7 +1,7 @@
 import { Geist } from "next/font/google";
 import "./globals.css";
 import Image from "next/image";
-import backgroundImage from "@/app/assets/bg/background.jpg"
+import backgroundImage from "@/app/assets/bg/background-new.jpeg";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -9,8 +9,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "Realms of Math",
+  description: "The best way to up your math game!",
 };
 
 const geistSans = Geist({
@@ -29,15 +29,16 @@ export default function RootLayout({
         <div className="w-full h-full">
           <div className="absolute -z-50 w-full h-full">
             <Image
-              src={backgroundImage}
+              src="https://s3.imjustin.dev/hackathon/map_day.webp"
               alt="background"
-              className="w-full h-full object-cover"
+              width={1920}
+              height={1080}
+              className="w-full h-full object-cover object-center"
             />
           </div>
           {children}
-      
         </div>
-        
+
         {/* <ThemeProvider
           attribute="class"
           defaultTheme="system"
