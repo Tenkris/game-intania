@@ -47,27 +47,26 @@ export default function HealthBar({
           className="[image-rendering:pixelated] z-50 relative scale-105"
         />
         {/* Animated health bar foreground */}
-        <div
-          className="absolute top-0 left-0 h-full rounded-sm z-10"
-          style={{
-            width: `${healthPercentage}%`,
-            backgroundColor: getHealthColor(),
-            transition: `width ${transitionSpeed} ease-out, background-color 0.3s`,
-          }}
-        />
+        <div>
+          <div
+            className="absolute top-0 left-0 h-full rounded-sm z-10"
+            style={{
+              width: `${healthPercentage}%`,
+              backgroundColor: getHealthColor(),
+              transition: `width ${transitionSpeed} ease-out, background-color 0.3s`,
+            }}
+          />
 
-        {/* Decorative texture overlay */}
-        <div
-          className="absolute top-0 left-0 w-full h-full opacity-30"
-          style={{
-            backgroundImage:
-              "linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%, transparent)",
-            backgroundSize: "10px 10px",
-          }}
-        />
-
-        {/* Top highlight */}
-        {/* <div className="absolute top-0 left-0 w-full h-[1px] bg-white opacity-20" /> */}
+          {/* Decorative texture overlay */}
+          <div
+            className="absolute top-0 left-0 w-full h-full opacity-30"
+            style={{
+              backgroundImage:
+                "linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%, transparent)",
+              backgroundSize: "10px 10px",
+            }}
+          />
+        </div>
       </div>
 
       {/* Low health pulse animation */}
