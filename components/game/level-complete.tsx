@@ -1,21 +1,22 @@
 "use client";
 import signTallImage from "@/app/assets/hud/sign-tall.webp";
 import Image from "next/image";
-import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { UpdateUserBody, User } from "@/types/user";
 import { updateUser, getMyUser } from "@/utils/api/user";
+import ButtonImage from "@/components/common/ButtonImage";
 
 const mockUpgradables = [
   { label: "+ 20 ATK", attribute: "attack", value: 20 },
   { label: "+ 20 DEF", attribute: "defense", value: 20 },
   { label: "+ 20 SPD", attribute: "speed", value: 20 },
-  { label: "+ 20% Crit", attribute: "critical", value: 20 },
+  //   { label: "+ 20% Crit", attribute: "critical", value: 20 },
 ];
 const LevelComplete = ({ LevelCompleted }: { LevelCompleted: boolean }) => {
   const router = useRouter();
   const [showNext, setShowNext] = useState<boolean>(false);
+
   const handleUpdateUser = async (field: keyof User, value: number) => {
     const me = await getMyUser();
 
@@ -36,6 +37,7 @@ const LevelComplete = ({ LevelCompleted }: { LevelCompleted: boolean }) => {
       }
     }
   };
+  const gambling = async () => {};
   if (LevelCompleted && !showNext)
     return (
       <div className="w-[40rem] h-[30rem] flex flex-col justify-center items-center rounded-lg relative">
@@ -47,19 +49,19 @@ const LevelComplete = ({ LevelCompleted }: { LevelCompleted: boolean }) => {
         <h1 className="text-2xl font-bold mb-4">You Win!</h1>
         <h1 className="text-center pb-3 m-3 text-xl">Choose your power up</h1>
         <div className="grid grid-cols-2 gap-4">
-          {mockUpgradables.map((item) => (
-            <Button
-              key={item.attribute}
-              className="flex"
-              variant={"default"}
-              size={"lg"}
-              onClick={() =>
-                handleUpdateUser(item.attribute as keyof User, item.value)
-              }
-            >
-              {item.label}
-            </Button>
-          ))}
+          <div className="grid grid-cols-2 gap-4">
+            {mockUpgradables.map((item) => (
+              <ButtonImage
+                key={item.label}
+                onClick={() =>
+                  handleUpdateUser(item.attribute as keyof User, item.value)
+                }
+              >
+                {item.label}
+              </ButtonImage>
+            ))}
+            <ButtonImage onClick={gambling}>Gambling</ButtonImage>
+          </div>
         </div>
       </div>
     );
@@ -71,10 +73,12 @@ const LevelComplete = ({ LevelCompleted }: { LevelCompleted: boolean }) => {
           alt="Button Sign"
           className="w-full h-full absolute  top-0 -z-[1] left-0 [image-rendering:pixelated]"
         />
-        <h1 className="text-2xl font-bold mb-4">Next Level?</h1>
+        <h1 className="text-2xl font-bold mb-4">Go to Level?</h1>
         <div className="flex flex-row gap-5 p-4">
-          <Button onClick={() => router.push("/")}>Home</Button>
-          <Button onClick={() => router.push("/game")}>Next Level</Button>
+          <ButtonImage onClick={() => router.push("/")}>Home</ButtonImage>
+          <ButtonImage onClick={() => router.push("/game")}>
+            Next Level
+          </ButtonImage>
         </div>
       </div>
     );
@@ -88,18 +92,10 @@ const LevelComplete = ({ LevelCompleted }: { LevelCompleted: boolean }) => {
         />
         <h1 className="text-2xl font-bold mb-4">You Lose!</h1>
         <div className="flex flex-row gap-5 p-4">
-          <Button onClick={() => router.push("/")}>Home</Button>
-          <Button
-            onClick={() => {
-              if (window.location.pathname === "/game") {
-                window.location.reload();
-              } else {
-                router.push("/game");
-              }
-            }}
-          >
+          <ButtonImage onClick={() => router.push("/")}>Home</ButtonImage>
+          <ButtonImage onClick={() => window.location.reload()}>
             Try Again?
-          </Button>
+          </ButtonImage>
         </div>
       </div>
     );
