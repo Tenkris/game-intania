@@ -9,7 +9,7 @@ interface BossDefenseProps {
   onAttack: (damageReduction: number) => void;
   countdownTime: number;
   soundPlay: (soundId: string) => void;
-  heroRef: React.RefObject<HTMLDivElement | null>; // Add heroRef prop
+  heroRef: React.RefObject<HTMLDivElement | null>;
 }
 
 function BossDefense({
@@ -25,15 +25,46 @@ function BossDefense({
   const lastSpacebarPressRef = useRef<number>(0);
   const isComponentMounted = useRef(true);
   const shieldValueRef = useRef(shieldValue);
+  const animationFrameRef = useRef<number | null>(null);
+  const shieldDecayRateRef = useRef(1); // Points to decrease per decay cycle
+  const shieldIncreaseRateRef = useRef(5); // Points to increase per press
 
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
 
   // Attack timer
   const attackTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const spacebarPressCount = useRef(0);
+  const lastPressTimeRef = useRef(0);
 
   // Update ref when shield value changes
   useEffect(() => {
     shieldValueRef.current = shieldValue;
+
+    // Adjust decay rate based on shield value for smoother feel
+    if (shieldValue > 75) {
+      shieldDecayRateRef.current = 2; // Faster decay at higher levels
+    } else if (shieldValue > 50) {
+      shieldDecayRateRef.current = 1.5;
+    } else if (shieldValue > 25) {
+      shieldDecayRateRef.current = 1;
+    } else {
+      shieldDecayRateRef.current = 0.8; // Slower decay when shield is low
+    }
+
+    // Dynamic boost for rapid pressing
+    const now = Date.now();
+    if (now - lastPressTimeRef.current < 150) {
+      spacebarPressCount.current++;
+      // Increase shield boost for consecutive rapid presses (up to a limit)
+      shieldIncreaseRateRef.current = Math.min(
+        8,
+        5 + spacebarPressCount.current * 0.3
+      );
+    } else {
+      spacebarPressCount.current = 0;
+      shieldIncreaseRateRef.current = 5;
+    }
+    lastPressTimeRef.current = now;
   }, [shieldValue]);
 
   useEffect(() => {
@@ -46,40 +77,67 @@ function BossDefense({
     };
   }, [heroRef]);
 
-  // Function to activate shield
+  // Function to activate shield - now using requestAnimationFrame for smoother updates
   const activateShield = () => {
     // Record timestamp of press
     const now = Date.now();
     lastSpacebarPressRef.current = now;
 
-    if (shieldValue % 10 === 0) {
+    // Play sound at certain thresholds for better feedback
+    if (
+      Math.floor(shieldValue / 10) <
+      Math.floor((shieldValue + shieldIncreaseRateRef.current) / 10)
+    ) {
       soundPlay("shield");
     }
 
-    // Increase shield value (max 100)
-    setShieldValue((prev) => Math.min(prev + 5, 100));
+    // Increase shield value using requestAnimationFrame for smoother animation
+    if (animationFrameRef.current === null) {
+      const targetValue = Math.min(
+        shieldValueRef.current + shieldIncreaseRateRef.current,
+        100
+      );
 
-    // Set shield as active
-    setIsShieldActive(true);
+      const animateShieldIncrease = () => {
+        if (!isComponentMounted.current) return;
 
-    // Clear any existing timeout
+        if (shieldValueRef.current < targetValue) {
+          // Smoother increase with smaller increments
+          setShieldValue((prev) => {
+            const newValue = Math.min(prev + 1, targetValue);
+            return newValue;
+          });
+          animationFrameRef.current = requestAnimationFrame(
+            animateShieldIncrease
+          );
+        } else {
+          animationFrameRef.current = null;
+        }
+      };
+
+      animationFrameRef.current = requestAnimationFrame(animateShieldIncrease);
+    }
+
+    // Set shield as active with a small delay for visual smoothness
+    if (!isShieldActive) {
+      setTimeout(() => {
+        setIsShieldActive(true);
+      }, 10);
+    }
+
+    // Clear any existing timeout to prevent premature decay
     if (shieldTimeoutRef.current) {
       clearTimeout(shieldTimeoutRef.current);
       shieldTimeoutRef.current = null;
     }
 
-    // Skip further processing if shield is max
-    if (shieldValueRef.current >= 100) {
-      return;
-    }
-
     // Set timeout to start decreasing shield if spacebar not pressed
     shieldTimeoutRef.current = setTimeout(() => {
-      // Only start decreasing if it's been more than 200ms since last press
-      if (Date.now() - lastSpacebarPressRef.current > 200) {
+      // Only start decreasing if it's been more than 300ms since last press (more forgiving)
+      if (Date.now() - lastSpacebarPressRef.current > 300) {
         decreaseShield();
       }
-    }, 200);
+    }, 300); // Longer delay before decay starts
   };
 
   const decreaseShield = () => {
@@ -89,38 +147,44 @@ function BossDefense({
       shieldTimeoutRef.current = null;
     }
 
-    // Set shield value with function to ensure we have the latest value
-    setShieldValue((prev) => {
-      // If component is unmounted, don't update state
-      if (!isComponentMounted.current) return prev;
+    // Use requestAnimationFrame for smoother decreasing
+    const animateShieldDecrease = () => {
+      if (!isComponentMounted.current) return;
 
-      const newValue = Math.max(prev - 1, 0);
+      setShieldValue((prev) => {
+        const newValue = Math.max(prev - shieldDecayRateRef.current, 0);
 
-      // If shield reaches 0, set shield inactive and don't schedule another decrease
-      if (newValue === 0) {
-        setIsShieldActive(false);
-        return 0;
-      }
-
-      // Schedule next decrease AFTER state is updated
-      // This ensures we're not creating multiple timeouts
-      shieldTimeoutRef.current = setTimeout(() => {
-        // Verify component is still mounted
-        if (isComponentMounted.current) {
-          decreaseShield();
+        // If shield reaches 0, set shield inactive with a transition
+        if (newValue === 0) {
+          setIsShieldActive(false);
+          return 0;
         }
-      }, 100);
 
-      return newValue;
-    });
+        // Schedule next decrease with requestAnimationFrame
+        shieldTimeoutRef.current = setTimeout(() => {
+          // Verify component is still mounted
+          if (isComponentMounted.current) {
+            decreaseShield();
+          }
+        }, 120); // Slightly slower decay for better control
+
+        return newValue;
+      });
+    };
+
+    animateShieldDecrease();
   };
 
-  // Setup keyboard handling for spacebar
+  // Setup keyboard handling for spacebar with debounce
   useEffect(() => {
     const handleKeydown = (event: KeyboardEvent) => {
       if (event.code === "Space") {
         event.preventDefault();
-        activateShield();
+        // Small debounce to prevent too many rapid calls (20ms is still responsive but prevents overload)
+        const now = Date.now();
+        if (now - lastSpacebarPressRef.current > 20) {
+          activateShield();
+        }
       }
     };
 
@@ -173,14 +237,14 @@ function BossDefense({
     };
   }, [countdownTime, onAttack, soundPlay]);
 
-  // Track component mount status
+  // Track component mount status and ensure clean unmounting
   useEffect(() => {
     isComponentMounted.current = true;
 
     return () => {
       isComponentMounted.current = false;
 
-      // Clear all timeouts on unmount
+      // Clear all timeouts and animation frames on unmount
       if (shieldTimeoutRef.current) {
         clearTimeout(shieldTimeoutRef.current);
         shieldTimeoutRef.current = null;
@@ -189,6 +253,11 @@ function BossDefense({
       if (attackTimerRef.current) {
         clearTimeout(attackTimerRef.current);
         attackTimerRef.current = null;
+      }
+
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
       }
     };
   }, []);
@@ -207,22 +276,27 @@ function BossDefense({
           Spam SPACEBAR to raise your shield!
         </p>
 
-        {/* Shield progress bar */}
-        <div className="shield-progress-container mb-4 relative">
+        {/* Shield progress bar with smoother transition */}
+        <div className="shield-progress-container mb-4 relative w-4/5 h-6 bg-gray-800 rounded-full overflow-hidden">
           <div
-            className="shield-progress-bar"
-            style={{ width: `${shieldValue}%` }}
+            className="shield-progress-bar h-full rounded-full transition-all duration-100 ease-out"
+            style={{
+              width: `${shieldValue}%`,
+              background: `linear-gradient(90deg, 
+                ${shieldValue > 75 ? "#10b981" : shieldValue > 50 ? "#3b82f6" : shieldValue > 25 ? "#f59e0b" : "#ef4444"} 0%, 
+                ${shieldValue > 75 ? "#34d399" : shieldValue > 50 ? "#60a5fa" : shieldValue > 25 ? "#fbbf24" : "#f87171"} 100%)`,
+            }}
           ></div>
-          <span className="absolute right-2 top-0 text-white text-xs">
+          <span className="absolute right-2 top-0 text-white text-xs font-semibold mix-blend-difference">
             {Math.round(shieldValue)}%
           </span>
         </div>
 
-        {/* Status text based on shield level */}
+        {/* Status text based on shield level with animated pulse for feedback */}
         <p
           className={`text-lg font-bold ${
             shieldValue > 75
-              ? "text-green-500"
+              ? "text-green-500 animate-pulse"
               : shieldValue > 50
                 ? "text-blue-400"
                 : shieldValue > 25
@@ -239,14 +313,33 @@ function BossDefense({
                 : "VULNERABLE!"}
         </p>
       </div>
-      {/* Shield effect portal */}
+
+      {/* Shield effect portal with smoother transitions */}
       {portalTarget &&
-        isShieldActive &&
         createPortal(
           <div
-            className="absolute inset-0 border-4 border-cyan-400 opacity-40 rounded-full shield-active"
+            className={`absolute inset-0 rounded-full transition-all duration-200 ease-out ${
+              isShieldActive ? "opacity-100" : "opacity-0"
+            }`}
             style={{
-              opacity: Math.max(0.2, shieldValue / 150),
+              border: `${Math.min(8, 4 + shieldValue / 25)}px solid ${
+                shieldValue > 75
+                  ? "rgba(16, 185, 129, 0.6)"
+                  : shieldValue > 50
+                    ? "rgba(59, 130, 246, 0.6)"
+                    : shieldValue > 25
+                      ? "rgba(245, 158, 11, 0.6)"
+                      : "rgba(239, 68, 68, 0.6)"
+              }`,
+              boxShadow: `0 0 ${Math.min(20, 5 + shieldValue / 10)}px ${
+                shieldValue > 75
+                  ? "rgba(16, 185, 129, 0.4)"
+                  : shieldValue > 50
+                    ? "rgba(59, 130, 246, 0.4)"
+                    : shieldValue > 25
+                      ? "rgba(245, 158, 11, 0.4)"
+                      : "rgba(239, 68, 68, 0.4)"
+              }`,
             }}
           />,
           portalTarget
