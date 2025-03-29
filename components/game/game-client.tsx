@@ -15,6 +15,7 @@ import { redirect, useRouter } from "next/navigation";
 import { UpdateUserBody, User } from "@/types/user";
 import BossDefense from "./client-defense";
 import { updateUser } from "@/utils/api/user";
+import CriticalHit from "./critical-hit";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:3000/api/v1";
@@ -114,6 +115,11 @@ export default function GamePage({
   );
   const router = useRouter();
 
+  const [showCriticalHit, setShowCriticalHit] = useState(false);
+  const [damageMultiplier, setDamageMultiplier] = useState(1.0);
+  const [showDamageText, setShowDamageText] = useState(false);
+  const [damageText, setDamageText] = useState("");
+
   const fetchQuestion = async (questionId: string) => {
     setLoading(true);
     try {
@@ -188,8 +194,7 @@ export default function GamePage({
     [gameState.whoseTurn]
   );
 
-  // Animation for hero attack
-  const performHeroAttack = () => {
+  const performHeroAttack = (multiplier = 1.0) => {
     setIsHeroAttacking(true);
 
     // Move hero forward
@@ -198,8 +203,23 @@ export default function GamePage({
     const duration = 1000; // Total animation duration in ms
     const startTime = Date.now();
 
-    // Player attack sound
+    // Player attack sound with volume adjusted for multiplier effect
+    SoundManager.sounds["heroAttack"].volume = Math.min(
+      0.8,
+      0.5 + (multiplier - 1.0) * 0.3
+    );
     SoundManager.play("heroAttack");
+
+    // Calculate and show damage text
+    const baseDamage = 10; // Base damage value
+    const damage = Math.round(baseDamage * multiplier);
+    setDamageText(`${damage} (${multiplier.toFixed(1)}x)`);
+    setShowDamageText(true);
+
+    // Hide damage text after animation completes
+    setTimeout(() => {
+      setShowDamageText(false);
+    }, 1500);
 
     // Cancel any existing animation
     if (heroAnimationRef.current) {
@@ -351,6 +371,33 @@ export default function GamePage({
     setIsTimerStarted(true);
   };
 
+  const handleCriticalHitComplete = (multiplier: number) => {
+    setDamageMultiplier(multiplier);
+    setShowCriticalHit(false);
+
+    // Now perform the hero attack with the multiplier
+    performHeroAttack(multiplier);
+
+    // Update game state with damage based on multiplier
+    const baseDamage = 10; // Base damage value
+    const damage = Math.round(baseDamage * multiplier);
+
+    setGameState((prevState) => ({
+      ...prevState,
+      boss: {
+        ...prevState.boss,
+        health: Math.max(0, prevState.boss.health - damage),
+      },
+      whoseTurn: "boss",
+    }));
+
+    // Reset multiplier after a delay
+    setTimeout(() => {
+      setDamageMultiplier(1.0);
+      setShowCorrectEffect(false);
+    }, 1500);
+  };
+
   function onSelectChoice(choice: number) {
     if (gameState.whoseTurn !== "hero") {
       console.log("Not your turn!");
@@ -361,9 +408,8 @@ export default function GamePage({
     const isCorrect = selectedAnswer === answer.current;
     if (isCorrect) {
       setShowCorrectEffect(true);
+      SoundManager.play("correctAnswer");
 
-      // Start hero attack animation
-      performHeroAttack();
       // Prefetch the next question
       const questionId =
         levelData.question_ids[gameState.currentQuestionIndex + 1];
@@ -376,19 +422,10 @@ export default function GamePage({
           }));
         }
       });
-      setGameState((prevState) => ({
-        ...prevState,
-        boss: {
-          ...prevState.boss,
-          health: prevState.boss.health - 10, // Example damage
-        },
-        whoseTurn: "boss",
-      }));
+
+      // Show critical hit mini-game instead of immediately attacking
+      setShowCriticalHit(true);
       setIsTimerStarted(false);
-      setTimeout(() => {
-        setIsTimerStarted(true);
-        setShowCorrectEffect(false);
-      }, 1500); // Wait for animation to complete
     }
     if (!isCorrect) {
       setShowWrongEffect(true);
@@ -494,6 +531,21 @@ export default function GamePage({
       "https://s3.imjustin.dev/hackathon/shield.wav",
       0.1
     );
+    SoundManager.preload(
+      "criticalHit",
+      "https://s3.imjustin.dev/hackathon/powerUp.wav",
+      0.4
+    );
+    SoundManager.preload(
+      "criticalPerfect",
+      "https://s3.imjustin.dev/hackathon/confirmation1.wav",
+      0.5
+    );
+    SoundManager.preload(
+      "criticalGood",
+      "https://s3.imjustin.dev/hackathon/confirmation2.wav",
+      0.4
+    );
 
     // Cleanup on unmount
     return () => {
@@ -541,7 +593,7 @@ export default function GamePage({
       <div
         className={`absolute w-full h-full z-30 flex justify-center items-center ${isHeroAttacking ? "hidden" : ""}`}
       >
-        {gameState.whoseTurn === "hero" && (
+        {gameState.whoseTurn === "hero" && !showCriticalHit && (
           <div className="w-[40rem] h-[30rem] flex flex-col justify-center items-center rounded-lg relative">
             <Image
               src={signTallImage}
@@ -581,6 +633,12 @@ export default function GamePage({
             )}
           </div>
         )}
+
+        {/* Critical Hit Component */}
+        {showCriticalHit && (
+          <CriticalHit onComplete={handleCriticalHitComplete} />
+        )}
+
         {gameState.whoseTurn === "boss" && (
           <BossDefense
             onAttack={(damageReduction) => {
@@ -646,6 +704,14 @@ export default function GamePage({
             <span className="bg-neutral-200/60 p-1 absolute left-10 right-10 backdrop-blur-sm">
               {levelData.boss_name}
             </span>
+
+            {/* Add floating damage text */}
+            {showDamageText && (
+              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-12 text-yellow-300 font-bold text-2xl animate-float-up">
+                {damageText}
+              </div>
+            )}
+
             <Image
               src={monsterImage}
               alt="monster"
