@@ -8,7 +8,7 @@ import { User } from "@/types/user";
 
 export default function Leaderboard() {
 
-    const [users, setUsers] = useState<User[]>([]);
+    const [users, setUsers] = useState<{ rank: number, user: User}[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     async function fetchLeaderboard() {
@@ -28,8 +28,21 @@ export default function Leaderboard() {
             return 0;
         });
 
+        // Add rank to each user, if there are multiple users with the same level, they will have the same rank
+        let rank = 1;
+        let prevLevel = data[0].level_id;
+        const rankedUsers = data.map((user, index) => {
+            if (user.level_id !== prevLevel) {
+                rank = index + 1;
+                prevLevel = user.level_id;
+            }
+            return { rank: rank, user };
+        });
         
-        setUsers(data);
+
+
+        
+        setUsers(rankedUsers);
         setIsLoading(false);
     }
 
@@ -51,7 +64,7 @@ export default function Leaderboard() {
                         <div className="loader"></div>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto w-full h-full p-4">
+                    <div className="flex flex-col w-full max-h-[60vh] p-2 overflow-y-auto">
                         <table className="table w-full">
                             <thead>
                                 <tr>
@@ -63,10 +76,10 @@ export default function Leaderboard() {
                             <tbody>
                                 {
                                     users.map((user, index) => (
-                                        <tr key={user.email}>
-                                            <td className="px-2 py-2 text-center">{index + 1}</td>
-                                            <td className="px-2 py-2">{user.email}</td>
-                                            <td className="px-2 py-2 text-center">{user.level_id}</td>
+                                        <tr key={user.user.email}>
+                                            <td className="px-2 py-2 text-center">{user.rank}</td>
+                                            <td className="px-2 py-2">{user.user.email}</td>
+                                            <td className="px-2 py-2 text-center">{user.user.level_id}</td>
                                         </tr>
                                     ))
                                 }
