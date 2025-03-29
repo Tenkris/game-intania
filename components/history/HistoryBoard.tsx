@@ -50,16 +50,16 @@ export default function HistoryBoard() {
     }, [])
 
     return (
-        <div className="card w-11/12 lg:w-2/5 items-center justify-center">
+        <div className="card w-11/12 lg:w-2/5 items-center justify-center text-xs">
             <div className="flex justify-between items-center w-full p-2 lg:p-4">
                 <BackButton href="/" />
-                <h1 className="text-2xl font-bold">History</h1>
+                <h1 className="text-lg font-bold">History</h1>
                 <div className="w-6 h-6"></div>
             </div>
             {
                 isLoading && (
                     <div className="flex flex-col items-center justify-center w-full h-full p-4">
-                        <p className="text-lg font-semibold">Loading...</p>
+                        <p className="text-xs font-semibold">Loading...</p>
                         <div className="loader"></div>
                     </div>
                 )
@@ -67,7 +67,7 @@ export default function HistoryBoard() {
             {
                 (!isLoading && history.length === 0) && (
                     <div className="flex flex-col items-center justify-center w-full h-full p-4">
-                        <p className="text-lg font-semibold">You haven't finished any levels!</p>
+                        <p className="text-xs font-semibold">You haven't finished any levels!</p>
                     </div>
                 )
             }

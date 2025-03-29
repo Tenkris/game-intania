@@ -69,11 +69,11 @@
 }
 
 .card {
-  @apply bg-white shadow-md rounded-lg p-4 opacity-80 flex flex-col gap-4;
+  @apply bg-white shadow-md rounded-lg p-4 opacity-95 flex flex-col gap-4;
 }
 
 .button {
-  @apply bg-slate-700 hover:bg-slate-600  text-primary-foreground rounded-lg px-4 py-2 font-semibold transition duration-200 ease-in-out;
+  @apply flex items-center justify-center text-center text-xs bg-slate-700 hover:bg-slate-600  text-primary-foreground rounded-lg px-4 py-2 font-semibold transition duration-200 ease-in-out;
 }
 
 .input {

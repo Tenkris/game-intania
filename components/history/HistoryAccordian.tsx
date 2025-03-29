@@ -13,7 +13,7 @@ export default function HistoryAccordian({ isActive, onClick, data, ...props }: 
   return (
     <div className="border-b border-slate-200">
       <button onClick={onClick} className="w-full flex justify-between items-center py-5 ">
-        <div className="font-bold">Level {data.level} <span className="text-xs font-normal">({data.question_ids.length} questions)</span></div>
+        <div className="font-bold">Level {data.level} <span className="text-[10px] font-normal">({data.question_ids.length} questions)</span></div>
         <span className="text-slate-800 transition-all duration-300">
           {isActive ? <ChevronDown className="rotate-180" /> : <ChevronDown />}
         </span>
@@ -34,7 +34,7 @@ function HistoryAccordianQuestion({ data }: { data: Question }) {
   return (
     <div className="flex flex-col gap-2 p-4 border-b border-slate-200">
       <span className="font-bold">{data.question}</span>
-      <span className="text-xs text-slate-500">{(data.type === QuestionType.MULTIPLE_CHOICE) ? "Multiple Choice Question" : "Short Answer Question"}</span>
+      <span className="text-[10px] text-slate-500">{(data.type === QuestionType.MULTIPLE_CHOICE) ? "Multiple Choice Question" : "Short Answer Question"}</span>
       {
         data.type === QuestionType.MULTIPLE_CHOICE ? (
           <div className="flex flex-col gap-2">
@@ -46,8 +46,8 @@ function HistoryAccordianQuestion({ data }: { data: Question }) {
           </div>
         ) : (
           <div>
-            <span className="text-sm ">Correct Answer: </span>
-            <span className="text-sm ">{data.answer}</span>
+            <span className="">Correct Answer: </span>
+            <span className="">{data.answer}</span>
           </div>
         )
       }
@@ -59,7 +59,7 @@ function QuestionChoice({ choice, isCorrect }: { choice: string, isCorrect: bool
   return (
     <div className={`flex items-center gap-2 p-2 rounded-md ${isCorrect ? "bg-green-200" : "bg-red-200"}`}>
       <span className={`w-4 h-4 rounded-full ${isCorrect ? "bg-green-800" : "bg-red-800"}`}></span>
-      <span className={`text-sm ${isCorrect ? "text-green-800" : "text-red-800"}`}>{choice}</span>
+      <span className={`text-xs ${isCorrect ? "text-green-800" : "text-red-800"}`}>{choice}</span>
     </div>
   )
 }

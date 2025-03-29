@@ -4,6 +4,7 @@ import { getMyUser } from "@/utils/api/user";
 import Image from "next/image";
 import Link from "next/link";
 import longButtonImg from "@/app/assets/button/long_button.png";
+import ButtonImage from "@/components/common/ButtonImage";
 
 export default async function HomePage() {
   // Check if user is logged in
@@ -11,15 +12,15 @@ export default async function HomePage() {
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center gap-5">
-      <div className="card w-96 items-center justify-center">
+      <div className="flex flex-col gap-3 w-96 items-center justify-center">
 
         {
           userInfo ? (
-            <Link href="/game" className="button w-full text-center">Play</Link>
+            <ButtonImage><Link href="/game" className="w-full text-center block">Play</Link></ButtonImage>
           ) : (
             <>
-              <Link href="/login" className="button w-full text-center">Login</Link>
-              <Link href="/register" className="button w-full text-center">Register</Link>
+              <ButtonImage><Link href="/login" className="w-full text-center block">Login</Link></ButtonImage>
+              <ButtonImage><Link href="/register" className="w-full text-center block">Register</Link></ButtonImage>
             </>
             
           )
@@ -29,9 +30,15 @@ export default async function HomePage() {
         {
           userInfo && (
             <>
-              <Link href="/leaderboard" className="button w-full text-center">Leaderboard</Link>
-              <Link href="/history" className="button w-full text-center">History</Link>
-              <button className="button w-full text-center" onClick={logout}>Log Out</button>
+              <ButtonImage><Link href="/tutorial" className="w-full text-center block">Tutorial</Link></ButtonImage>
+              <ButtonImage><Link href="/profile" className="w-full text-center block">Profile</Link></ButtonImage>
+              <ButtonImage><Link href="/leaderboard" className="w-full text-center block">Leaderboard</Link></ButtonImage>
+              <ButtonImage ><Link href="/history" className="w-full text-center block">History</Link></ButtonImage>
+              
+              <ButtonImage onClick={logout} alt="Log Out" type = "button" >
+                Log Out
+              </ButtonImage>
+              {/* <button className="button w-full text-center" onClick={logout}>Log Out</button> */}
             </>
           )
         }

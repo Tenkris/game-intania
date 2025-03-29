@@ -3,12 +3,13 @@ import { Button } from "@/components/ui/button";
 import { UpdateUserBody, User } from "@/types/user";
 import { updateUser, getMyUser } from "@/utils/api/user";
 import { useRouter } from "next/navigation";
+import ButtonImage from "@/components/common/ButtonImage";
 
 const mockUpgradables = [
   { label: "+ 20 ATK", attribute: "attack", value: 20 },
   { label: "+ 20 DEF", attribute: "defense", value: 20 },
-  { label: "+ 20 SPD", attribute: "speed", value: 20 },
-  { label: "+ 20% Critical", attribute: "critical", value: 20 },
+  { label: "+ 20 HP", attribute: "hp", value: 20 },
+  // { label: "+ 20% Critical", attribute: "critical", value: 20 },
 ];
 const GiftButtons = () => {
   const router = useRouter();
@@ -33,21 +34,27 @@ const GiftButtons = () => {
     }
   };
 
+  const gambling = async () => {
+
+  }
+
   return (
     <div className="grid grid-cols-2 gap-4">
       {mockUpgradables.map((item) => (
-        <Button
-          key={item.attribute}
-          className="flex"
-          variant={"default"}
-          size={"lg"}
+        <ButtonImage
+          key={item.label}
           onClick={() =>
             handleUpdateUser(item.attribute as keyof User, item.value)
           }
         >
           {item.label}
-        </Button>
+        </ButtonImage>
       ))}
+      <ButtonImage
+          onClick={gambling}
+        >
+        Gambling
+      </ButtonImage>
     </div>
   );
 };
