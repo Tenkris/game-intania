@@ -69,7 +69,7 @@ export default function Leaderboard({ myUser }: { myUser: User }) {
                             <thead>
                                 <tr>
                                     <th className="px-2 py-2 w-[15%]">Rank</th>
-                                    <th className="px-2 py-2 w-[65%]">Email</th>
+                                    <th className="px-2 py-2 w-[65%]">Name</th>
                                     <th className="px-2 py-2 w-[20%]">Level</th>
                                 </tr>
                             </thead>
