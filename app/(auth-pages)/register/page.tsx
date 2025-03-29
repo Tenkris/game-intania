@@ -53,13 +53,15 @@ export default function Signup() {
           name="email"
           id="email"
           placeholder="Email"
+          className="input"
           required
         />
         <Input
           type="text"
           name="name"
           id="name"
-          placeholder="name"
+          placeholder="Display Name"
+          className="input"
           required
         />
         <Input
@@ -67,6 +69,7 @@ export default function Signup() {
           name="password"
           id="password"
           placeholder="Password"
+          className="input"
           required
         />
         <Input
@@ -74,6 +77,7 @@ export default function Signup() {
           name="confirmPassword"
           id="confirmPassword"
           placeholder="Confirm Password"
+          className="input"
           required
         />
         <p className="text-xs text-center">
@@ -82,7 +86,7 @@ export default function Signup() {
             Login
           </Link>
         </p>
-        <ButtonImage type="submit" alt = "Create Account">Create Account</ButtonImage>
+        <ButtonImage type="submit" alt = "Create Account">Register</ButtonImage>
         {/* <button type="submit" className="button">Create Account</button> */}
       </form>
     </div>
