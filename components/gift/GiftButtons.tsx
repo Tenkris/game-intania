@@ -7,8 +7,8 @@ import { useRouter } from "next/navigation";
 const mockUpgradables = [
   { label: "+ 20 ATK", attribute: "attack", value: 20 },
   { label: "+ 20 DEF", attribute: "defense", value: 20 },
-  { label: "+ 20 SPD", attribute: "speed", value: 20 },
-  { label: "+ 20% Critical", attribute: "critical", value: 20 },
+  { label: "+ 20 HP", attribute: "hp", value: 20 },
+  // { label: "+ 20% Critical", attribute: "critical", value: 20 },
 ];
 const GiftButtons = () => {
   const router = useRouter();
@@ -33,6 +33,10 @@ const GiftButtons = () => {
     }
   };
 
+  const gambling = async () => {
+
+  }
+
   return (
     <div className="grid grid-cols-2 gap-4">
       {mockUpgradables.map((item) => (
@@ -48,6 +52,14 @@ const GiftButtons = () => {
           {item.label}
         </Button>
       ))}
+      <Button
+          className="flex"
+          variant={"default"}
+          size={"lg"}
+          onClick={gambling}
+        >
+        Gambling
+      </Button>
     </div>
   );
 };

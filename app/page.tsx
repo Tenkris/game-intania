@@ -30,6 +30,7 @@ export default async function HomePage() {
         {
           userInfo && (
             <>
+              <ButtonImage><Link href="/profile" className="w-full text-center block">Profile</Link></ButtonImage>
               <ButtonImage><Link href="/leaderboard" className="w-full text-center block">Leaderboard</Link></ButtonImage>
               <ButtonImage ><Link href="/history" className="w-full text-center block">History</Link></ButtonImage>
               
