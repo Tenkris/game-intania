@@ -49,19 +49,17 @@ const LevelComplete = ({ LevelCompleted }: { LevelCompleted: boolean }) => {
         <h1 className="text-2xl font-bold mb-4">You Win!</h1>
         <h1 className="text-center pb-3 m-3 text-xl">Choose your power up</h1>
         <div className="grid grid-cols-2 gap-4">
-          <div className="grid grid-cols-2 gap-4">
-            {mockUpgradables.map((item) => (
-              <ButtonImage
-                key={item.label}
-                onClick={() =>
-                  handleUpdateUser(item.attribute as keyof User, item.value)
-                }
-              >
-                {item.label}
-              </ButtonImage>
-            ))}
-            <ButtonImage onClick={gambling}>Gambling</ButtonImage>
-          </div>
+          {mockUpgradables.map((item) => (
+            <ButtonImage
+              key={item.label}
+              onClick={() =>
+                handleUpdateUser(item.attribute as keyof User, item.value)
+              }
+            >
+              {item.label}
+            </ButtonImage>
+          ))}
+          <ButtonImage onClick={gambling}>Gambling</ButtonImage>
         </div>
       </div>
     );
