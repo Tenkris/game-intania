@@ -27,7 +27,7 @@ function PlayerStats({ attack, defense }: { attack: number; defense: number }) {
             alt="Attack"
             className="size-16 [image-rendering:pixelated]"
           />
-          <span className="text-sm font-bold text-black">{attack}</span>
+          <span className="text-sm font-bold text-black">{defense}</span>
         </div>
       </div>
     </div>
