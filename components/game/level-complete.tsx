@@ -6,6 +6,7 @@ import { useState } from "react";
 import { UpdateUserBody, User } from "@/types/user";
 import { updateUser, getMyUser } from "@/utils/api/user";
 import ButtonImage from "@/components/common/ButtonImage";
+import GamblingCarousel from "../gift/Carousel";
 
 const mockUpgradables = [
   { label: "+ 20 ATK", attribute: "attack", value: 20 },
@@ -16,6 +17,7 @@ const mockUpgradables = [
 const LevelComplete = ({ LevelCompleted }: { LevelCompleted: boolean }) => {
   const router = useRouter();
   const [showNext, setShowNext] = useState<boolean>(false);
+  const [showGambling, setShowGambling] = useState<boolean>(false);
 
   const handleUpdateUser = async (field: keyof User, value: number) => {
     const me = await getMyUser();
@@ -37,8 +39,18 @@ const LevelComplete = ({ LevelCompleted }: { LevelCompleted: boolean }) => {
       }
     }
   };
-  const gambling = async () => {};
-  if (LevelCompleted && !showNext)
+
+  const gambling = async () => {
+    setShowGambling(true);
+  };
+
+  async function onFinishGambling(field: keyof User, value: number) {
+    await handleUpdateUser(field, value);
+    setShowGambling(false);
+
+  }
+
+  if (LevelCompleted && !showNext && !showGambling)
     return (
       <div className="w-[40rem] h-[30rem] flex flex-col justify-center items-center rounded-lg relative">
         <Image
@@ -49,22 +61,26 @@ const LevelComplete = ({ LevelCompleted }: { LevelCompleted: boolean }) => {
         <h1 className="text-2xl font-bold mb-4">You Win!</h1>
         <h1 className="text-center pb-3 m-3 text-xl">Choose your power up</h1>
         <div className="grid grid-cols-2 gap-4">
-          <div className="grid grid-cols-2 gap-4">
-            {mockUpgradables.map((item) => (
-              <ButtonImage
-                key={item.label}
-                onClick={() =>
-                  handleUpdateUser(item.attribute as keyof User, item.value)
-                }
-              >
-                {item.label}
-              </ButtonImage>
-            ))}
-            <ButtonImage onClick={gambling}>Gambling</ButtonImage>
-          </div>
+          {mockUpgradables.map((item) => (
+            <ButtonImage
+              key={item.label}
+              onClick={() =>
+                handleUpdateUser(item.attribute as keyof User, item.value)
+              }
+            >
+              {item.label}
+            </ButtonImage>
+          ))}
+          <ButtonImage onClick={gambling}>Gambling</ButtonImage>
         </div>
       </div>
     );
+  
+  if (LevelCompleted && !showNext && showGambling)
+    return (
+      <GamblingCarousel updateUser={onFinishGambling} />
+    );
+
   if (LevelCompleted && showNext)
     return (
       <div className="w-[40rem] h-[30rem] flex flex-col justify-center items-center rounded-lg relative">
@@ -76,7 +92,7 @@ const LevelComplete = ({ LevelCompleted }: { LevelCompleted: boolean }) => {
         <h1 className="text-2xl font-bold mb-4">Go to Level?</h1>
         <div className="flex flex-row gap-5 p-4">
           <ButtonImage onClick={() => router.push("/")}>Home</ButtonImage>
-          <ButtonImage onClick={() => router.push("/game")}>
+          <ButtonImage onClick={() => window.location.reload()}>
             Next Level
           </ButtonImage>
         </div>

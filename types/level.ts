@@ -1,7 +1,7 @@
 import { Question } from "./question";
 
 export interface Level {
-  level: 7;
+  level: number;
   boss_name: string;
   boss_image_s3: string;
   boss_hp: number;

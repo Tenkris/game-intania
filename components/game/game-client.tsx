@@ -93,7 +93,7 @@ export default function GamePage({
     boss: BossProperty;
     question: QuestionData | null;
     currentQuestionIndex: number;
-    whoseTurn: "hero" | "boss";
+    whoseTurn: "hero" | "boss" | "gameOver";
   }>({
     hero: {
       defense: userData.defense,
@@ -223,7 +223,7 @@ export default function GamePage({
     SoundManager.play("heroAttack");
 
     // Calculate and show damage text
-    const baseDamage = 10; // Base damage value
+    const baseDamage = gameStateRef.current.hero.attack; // Base damage value
     const damage = Math.round(baseDamage * multiplier);
     setDamageText(`${damage} (${multiplier.toFixed(1)}x)`);
     setShowDamageText(true);
@@ -392,7 +392,7 @@ export default function GamePage({
     performHeroAttack(multiplier);
 
     // Update game state with damage based on multiplier
-    const baseDamage = 10; // Base damage value
+    const baseDamage = gameStateRef.current.hero.attack; // Base damage value
     const damage = Math.round(baseDamage * multiplier);
 
     setGameState((prevState) => ({
@@ -570,6 +570,7 @@ export default function GamePage({
     if (gameState.boss.health <= 0) {
       // Handle boss defeat
       console.log("Boss defeated!");
+
       const updatedUserData: UpdateUserBody = {
         ...userData,
         level_id: levelData.level + 1,
@@ -580,6 +581,13 @@ export default function GamePage({
         setShowLevelComplete(true);
         setCompleted(true);
       });
+
+      // set whooseTurn to gameOver
+      setGameState((prevState) => ({
+        ...prevState,
+        whoseTurn: "gameOver",
+      }));
+
       // Show victory animation or message
       // Reset game state or redirect to another page
     } else if (gameState.hero.health <= 0) {
@@ -589,6 +597,12 @@ export default function GamePage({
       // Show defeat animation or message
       // Show Level complete modal
       setShowLevelComplete(true);
+
+      // set whooseTurn to gameOver
+      setGameState((prevState) => ({
+        ...prevState,
+        whoseTurn: "gameOver",
+      }));
     }
   }, [gameState.boss.health, gameState.hero.health]);
 
@@ -721,7 +735,7 @@ export default function GamePage({
               transition: isBossAttacking ? "none" : "transform 0.5s ease-out",
             }}
           >
-            <span className="bg-neutral-200/60 p-1 absolute left-10 right-10 backdrop-blur-sm">
+            <span className="bg-neutral-200/60 p-1 absolute left-10 right-10 backdrop-blur-sm text-center" >
               {levelData.boss_name}
             </span>
 
