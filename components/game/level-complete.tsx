@@ -92,7 +92,7 @@ const LevelComplete = ({ LevelCompleted }: { LevelCompleted: boolean }) => {
         <h1 className="text-2xl font-bold mb-4">Go to Level?</h1>
         <div className="flex flex-row gap-5 p-4">
           <ButtonImage onClick={() => router.push("/")}>Home</ButtonImage>
-          <ButtonImage onClick={() => router.push("/game")}>
+          <ButtonImage onClick={() => window.location.reload()}>
             Next Level
           </ButtonImage>
         </div>

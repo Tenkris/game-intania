@@ -8,12 +8,14 @@ import signTallImage from "@/app/assets/hud/sign-tall.webp";
 
 const gamblingItems = [
     { label: "+ 5 ATK", attribute: "attack", value: 5 },
+    { label: "+ 5 ATK", attribute: "attack", value: 5 },
     { label: "+ 10 ATK", attribute: "attack", value: 10 },
     { label: "+ 15 ATK", attribute: "attack", value: 15 },
     { label: "+ 20 ATK", attribute: "attack", value: 20 },
     { label: "+ 25 ATK", attribute: "attack", value: 25 },
     { label: "+ 30 ATK", attribute: "attack", value: 30 },
     { label: "+ 35 ATK", attribute: "attack", value: 35 },
+    { label: "+ 5 DEF", attribute: "defense", value: 5 },
     { label: "+ 5 DEF", attribute: "defense", value: 5 },
     { label: "+ 10 DEF", attribute: "defense", value: 10 },
     { label: "+ 15 DEF", attribute: "defense", value: 15 },
@@ -22,6 +24,7 @@ const gamblingItems = [
     { label: "+ 30 DEF", attribute: "defense", value: 30 },
     { label: "+ 35 DEF", attribute: "defense", value: 35 },
     { label: "+ 5 HP", attribute: "hp", value: 5 },
+    { label: "+ 5 HP", attribute: "hp", value: 5 },
     { label: "+ 10 HP", attribute: "hp", value: 10 },
     { label: "+ 15 HP", attribute: "hp", value: 15 },
     { label: "+ 20 HP", attribute: "hp", value: 20 },
@@ -29,8 +32,11 @@ const gamblingItems = [
     { label: "+ 30 HP", attribute: "hp", value: 30 },
     { label: "+ 35 HP", attribute: "hp", value: 35 },
     { label: "Bad Luck!", attribute: "attack", value: 0 },
+    { label: "Unlucky!", attribute: "attack", value: 0 },
     { label: "No Reward!", attribute: "attack", value: 0 },
+    { label: "Oh no!", attribute: "attack", value: 0 },
     { label: "Good Bye!", attribute: "attack", value: 0 },
+    { label: "Why do you gamble?", attribute: "attack", value: 0 },
 ]
 
 export default function GamblingCarousel({ updateUser }: { updateUser: (field: keyof User, value: number) => Promise<void> }) {
@@ -113,8 +119,8 @@ export default function GamblingCarousel({ updateUser }: { updateUser: (field: k
                     />
                 <h1 className="text-2xl font-bold mb-4">Gambling</h1>
                 <div className="flex items-center justify-center gap-2">
-                    <div className={`w-64 h-64 rounded-lg shadow-lg flex items-center justify-center ${(isSpinning ? "bg-slate-200" : "bg-yellow-500")}`}>
-                        <h2 className="text-xl font-bold">{gamblingItems[currentIndex].label}</h2>
+                    <div className={`w-64 h-64 rounded-lg flex items-center justify-center ${(isSpinning ? "bg-slate-200" : "bg-yellow-500")}`}>
+                        <h2 className="text-xl font-bold text-center">{gamblingItems[currentIndex].label}</h2>
                     </div>
                 </div>
             </div>
