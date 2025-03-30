@@ -69,7 +69,7 @@
 }
 
 .card {
-  @apply bg-white shadow-md rounded-lg p-4 opacity-80 flex flex-col gap-4;
+  @apply bg-white/80 shadow-md rounded-lg p-4 flex flex-col gap-4;
 }
 
 .button {
