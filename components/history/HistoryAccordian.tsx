@@ -18,13 +18,17 @@ export default function HistoryAccordian({ isActive, onClick, data, ...props }: 
           {isActive ? <ChevronDown className="rotate-180" /> : <ChevronDown />}
         </span>
       </button>
-      <div className={"transition-all overflow-hidden duration-300 ease-in-out" + (isActive ? "  max-h-fit opacity-100" : " max-h-0 opacity-0")}>
-        {
-          data.questions.map((question, index) => (
-            <HistoryAccordianQuestion key={index} data={question} />
-          ))
-        }
-      </div>
+      {
+        (isActive) &&
+          <div className={"transition-all overflow-hidden duration-300 ease-in-out" + (isActive ? "  max-h-fit opacity-100" : " max-h-0 opacity-0")}>
+            {
+              data.questions.map((question, index) => (
+                <HistoryAccordianQuestion key={index} data={question} />
+              ))
+            }
+          </div>
+      }
+      
     </div>
   )
 }
