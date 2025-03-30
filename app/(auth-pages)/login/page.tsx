@@ -21,7 +21,7 @@ export default function Login() {
     const res = await login(email, password)
 
     if (res && "detail" in res) {
-      alert(res.detail);
+      alert("Your credentials are incorrect. Please try again.");
       return;
     }
   }
