@@ -1,104 +1,100 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# Realms of Math
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
+A turn-based RPG math learning game where players solve math problems to defeat monsters and progress through increasingly challenging levels.
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+## 🎮 Game Overview
 
-## Features
+> Realms of Math combines classic RPG elements with educational math challenges. Players embark on a journey through various levels, battling monsters by correctly answering math questions. Each correct answer allows the player to attack, while wrong answers give the monster a chance to strike back.
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Middleware
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+Key Features
 
-## Demo
+- Turn-based Combat: Strategic gameplay where correct answers lead to successful attacks
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+- Skill-based Defense: Active defense system during enemy turns
+- Critical Hit System: Timing-based mini-games to increase attack damage
+- Progression System: Level up your character's attributes as you advance
+- Pixel Art Aesthetic: Charming retro graphics with modern animations
 
-## Deploy to Vercel
+## 🛠️ Technical Architecture
 
-Vercel deployment will guide you through creating a Supabase account and project.
+### Frontend Stack
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+- Next.js: React framework with server-side rendering and API routes
+- TypeScript: Static typing for improved code quality and developer experience
+- Tailwind CSS: Utility-first CSS framework for responsive design
+- React Hooks: For state management and side effects
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+### Backend Stack
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+- FastAPI: High-performance Python web framework for API endpoints
+- AWS DynamoDB: NoSQL database for storing user data, game progress, and questions
+- MinIO S3: Object storage for game assets and media files
+- JWT Authentication: Secure user authentication and session management
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+### Infrastructure
 
-## Clone and run locally
+- Cloud Hosting: Deployed on AWS EC2
+- Self-Hosted: Minio S3
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+## 🎯 Core Game Mechanics
 
-2. Create a Next.js app using the Supabase Starter template npx command
+Question-Based Combat
+The combat system is question-driven, where:
 
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
+1. Player is presented with a math question
+2. Correct answers trigger the Critical Hit mini-game
+3. Success in the mini-game determines attack damage multiplier
+4. Damage is calculated and applied to the monster
 
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
+### Defense System
 
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
+During monster attacks, players engage in an active defense system:
 
-3. Use `cd` to change into the app's directory
+1. Player rapidly presses the spacebar to charge a shield
+2. Shield strength determines damage reduction
+3. The defense effectiveness is determined by player reaction time and input speed
 
-   ```bash
-   cd with-supabase-app
-   ```
+## 🚀 Getting Started
 
-4. Rename `.env.example` to `.env.local` and update the following:
+### Prerequisites
 
-   ```
-   NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=[INSERT SUPABASE PROJECT API ANON KEY]
-   ```
+- Node.js 18+ and npm or pnpm
+- Python 3.9+
+- AWS account (for DynamoDB)
+- MinIO S3 compatible storage
 
-   Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` can be found in [your Supabase project's API settings](https://app.supabase.com/project/_/settings/api)
+### Installation
 
-5. You can now run the Next.js local development server:
+1. Clone the repository:
 
-   ```bash
-   npm run dev
-   ```
+```sh
+git clone https://github.com/Tenkris/game-intania
+cd game-intania
+```
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+2. Install frontend dependencies:
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+```sh
+npm install
+```
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+## 🤝 Contributing
 
-## Feedback and issues
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+1. Fork the repository
+2. Create your feature branch (git checkout -b feature/amazing-feature)
+3. Commit your changes (git commit -m 'Add some amazing feature')
+4. Push to the branch (git push origin feature/amazing-feature)
+5. Open a Pull Request
 
-## More Supabase examples
+## 🙏 Acknowledgements
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+- Intania Hackathon 2025
+- ChadGPT Team
+
+  - [Justin](https://github.com/JusJira)
+  - [Nick](https://github.com/pineylilly)
+  - [Ten](https://github.com/Tenkris)
+  - [V](https://github.com/hellp002)
+  - [Win](https://github.com/WinSukon)
