@@ -79,7 +79,7 @@ export async function getAllUsers() {
       return null;
     }
 
-    const response = await fetch(`${API_URL}/users`, {
+    const response = await fetch(`${API_URL}/users/`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token.value}`,
