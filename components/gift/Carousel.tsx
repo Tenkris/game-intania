@@ -1,8 +1,10 @@
 "use client";
 
 import { User } from "@/types/user";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import signTallImage from "@/app/assets/hud/sign-tall.webp";
 
 const gamblingItems = [
     { label: "+ 5 ATK", attribute: "attack", value: 5 },
@@ -75,7 +77,6 @@ export default function GamblingCarousel({ updateUser }: { updateUser: (field: k
             SoundManager.play("reward");
             setTimeout(async () => {
                 await updateUser(gamblingItems[randomIndex].attribute as keyof User, gamblingItems[randomIndex].value);
-                router.push("/end");
             }, 2000)
             return;
         }
@@ -104,15 +105,16 @@ export default function GamblingCarousel({ updateUser }: { updateUser: (field: k
     
     return (
         <>
-            <div className="absolute top-0 left-0 w-screen h-screen z-30 bg-slate-500 opacity-50 flex flex-col justify-center items-center">
-            </div>
-            <div className="absolute top-0 left-0 w-full h-full z-40 flex justify-center items-center">
-                <div className="p-5 bg-white rounded-lg shadow-lg">
-                    <h1 className="text-center pb-3 m-3 text-lg">Gambling</h1>
-                    <div className="flex items-center justify-center gap-2">
-                        <div className={`w-64 h-64 rounded-lg shadow-lg flex items-center justify-center ${(isSpinning ? "bg-slate-200" : "bg-yellow-500")}`}>
-                            <h2 className="text-xl font-bold">{gamblingItems[currentIndex].label}</h2>
-                        </div>
+            <div className="w-[40rem] h-[30rem] flex flex-col justify-center items-center rounded-lg relative">
+                <Image
+                    src={signTallImage}
+                    alt="Button Sign"
+                    className="w-full h-full absolute  top-0 -z-[1] left-0 [image-rendering:pixelated]"
+                    />
+                <h1 className="text-2xl font-bold mb-4">Gambling</h1>
+                <div className="flex items-center justify-center gap-2">
+                    <div className={`w-64 h-64 rounded-lg shadow-lg flex items-center justify-center ${(isSpinning ? "bg-slate-200" : "bg-yellow-500")}`}>
+                        <h2 className="text-xl font-bold">{gamblingItems[currentIndex].label}</h2>
                     </div>
                 </div>
             </div>

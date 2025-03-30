@@ -6,6 +6,7 @@ import { useState } from "react";
 import { UpdateUserBody, User } from "@/types/user";
 import { updateUser, getMyUser } from "@/utils/api/user";
 import ButtonImage from "@/components/common/ButtonImage";
+import GamblingCarousel from "../gift/Carousel";
 
 const mockUpgradables = [
   { label: "+ 20 ATK", attribute: "attack", value: 20 },
@@ -16,6 +17,7 @@ const mockUpgradables = [
 const LevelComplete = ({ LevelCompleted }: { LevelCompleted: boolean }) => {
   const router = useRouter();
   const [showNext, setShowNext] = useState<boolean>(false);
+  const [showGambling, setShowGambling] = useState<boolean>(false);
 
   const handleUpdateUser = async (field: keyof User, value: number) => {
     const me = await getMyUser();
@@ -37,8 +39,18 @@ const LevelComplete = ({ LevelCompleted }: { LevelCompleted: boolean }) => {
       }
     }
   };
-  const gambling = async () => {};
-  if (LevelCompleted && !showNext)
+
+  const gambling = async () => {
+    setShowGambling(true);
+  };
+
+  async function onFinishGambling(field: keyof User, value: number) {
+    await handleUpdateUser(field, value);
+    setShowGambling(false);
+
+  }
+
+  if (LevelCompleted && !showNext && !showGambling)
     return (
       <div className="w-[40rem] h-[30rem] flex flex-col justify-center items-center rounded-lg relative">
         <Image
@@ -63,6 +75,12 @@ const LevelComplete = ({ LevelCompleted }: { LevelCompleted: boolean }) => {
         </div>
       </div>
     );
+  
+  if (LevelCompleted && !showNext && showGambling)
+    return (
+      <GamblingCarousel updateUser={onFinishGambling} />
+    );
+
   if (LevelCompleted && showNext)
     return (
       <div className="w-[40rem] h-[30rem] flex flex-col justify-center items-center rounded-lg relative">
