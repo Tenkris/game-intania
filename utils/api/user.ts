@@ -71,6 +71,8 @@ export async function getLevelData({
 
 export async function getAllUsers() {
   try {
+    console.log('api',API_URL)
+
     // Get cookie
     const cookieStore = await cookies();
     const token = cookieStore.get("token");
@@ -79,7 +81,7 @@ export async function getAllUsers() {
       return null;
     }
 
-    const response = await fetch(`${API_URL}/users`, {
+    const response = await fetch(`${API_URL}/users/`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token.value}`,
