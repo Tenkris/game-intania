@@ -132,6 +132,7 @@ export default function GamePage({
   const [damageText, setDamageText] = useState("");
   const userImageURL = userData.user_image || heroImage;
   const bossImageURL = levelData.boss_image_s3 || monsterImage;
+  const backgroundImageURL = levelData.background_image_s3;
 
   const fetchQuestion = async (questionId: string) => {
     setLoading(true);
@@ -723,6 +724,16 @@ export default function GamePage({
 
   return (
     <div className="w-full h-full">
+      { /* Background Image */}
+        <div className="absolute -z-50 w-full h-full">
+          <Image
+            src={backgroundImageURL}
+            alt="background"
+            width={1920}
+            height={1080}
+            className="w-full h-full object-cover object-center"
+          />
+        </div>
       {/* Overlay */}
       <div
         className={`absolute w-full h-full z-30 flex justify-center items-center ${isHeroAttacking ? "hidden" : ""}`}
