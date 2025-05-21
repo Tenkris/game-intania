@@ -457,7 +457,7 @@ export default function GamePage({
 
       // Prefetch the next question
       const questionId =
-        levelData.question_ids[gameState.currentQuestionIndex + 1];
+        levelData.question_ids[gameStateRef.current.currentQuestionIndex + 1];
       fetchQuestion(questionId).then((question) => {
         if (question) {
           setGameState((prevState) => ({
@@ -514,7 +514,7 @@ export default function GamePage({
 
       // Prefetch the next question
       const questionId =
-        levelData.question_ids[gameState.currentQuestionIndex + 1];
+        levelData.question_ids[gameStateRef.current.currentQuestionIndex + 1];
       fetchQuestion(questionId).then((question) => {
         if (question) {
           setGameState((prevState) => ({
@@ -580,7 +580,7 @@ export default function GamePage({
 
   useEffect(() => {
     const fetchData = async () => {
-      const questionId = levelData.question_ids[gameState.currentQuestionIndex];
+      const questionId = levelData.question_ids[gameStateRef.current.currentQuestionIndex];
       const question = await fetchQuestion(questionId);
       if (question) {
         setGameState((prevState) => ({
@@ -759,6 +759,7 @@ export default function GamePage({
                               onSubmitShortAnswer(e.currentTarget.value);
                             }
                           }}
+                          autoFocus 
                         />
                       </div>
                     ))
