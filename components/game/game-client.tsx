@@ -159,7 +159,6 @@ export default function GamePage({
       return null;
     }
   };
-  console.log("Show critical hit outside:", showCriticalHitRef.current);
 
   const handleKeydown = useCallback(
     (event: KeyboardEvent) => {
