@@ -123,6 +123,8 @@ export default function GamePage({
   const router = useRouter();
 
   const [showCriticalHit, setShowCriticalHit] = useState(false);
+  const showCriticalHitRef = useRef(showCriticalHit);
+  showCriticalHitRef.current = showCriticalHit;
   const [showLevelComplete, setShowLevelComplete] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [damageMultiplier, setDamageMultiplier] = useState(1.0);
@@ -156,6 +158,7 @@ export default function GamePage({
       return null;
     }
   };
+  console.log("Show critical hit outside:", showCriticalHitRef.current);
 
   const handleKeydown = useCallback(
     (event: KeyboardEvent) => {
@@ -446,7 +449,7 @@ export default function GamePage({
   function onSelectChoice(choice: number) {
     if (gameStateRef.current.question?.type !== "multiple_choice") return;
 
-    if (gameState.whoseTurn !== "hero") {
+    if ((gameStateRef.current.whoseTurn !== "hero") || showCriticalHitRef.current) {
       console.log("Not your turn!");
       return;
     }
