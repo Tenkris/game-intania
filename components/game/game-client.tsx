@@ -158,8 +158,8 @@ export default function GamePage({
   const handleKeydown = useCallback(
     (event: KeyboardEvent) => {
       // Prevent default for game keys
-      if (
-        [
+      // console.log(gameStateRef.current.question)
+      if ((gameStateRef.current.question?.type === "multiple_choice") && ([
           "Space",
           "Enter",
           "Escape",
@@ -174,10 +174,40 @@ export default function GamePage({
           "4",
           "5",
         ].includes(event.code) ||
-        ["1", "2", "3", "4", "5"].includes(event.key)
+        ["1", "2", "3", "4", "5"].includes(event.key))
       ) {
+        console.log("Preventing default for game keys");
         event.preventDefault();
       }
+      if ((gameStateRef.current.question?.type === "single_choice") && [
+          "Enter",
+          "Escape",
+          "Space",
+        ].includes(event.code)
+      ) {
+        console.log("Preventing default for Enter and Space");
+        event.preventDefault();
+      }
+      // if (
+      //   [
+      //     "Space",
+      //     "Enter",
+      //     "Escape",
+      //     "Digit1",
+      //     "Digit2",
+      //     "Digit3",
+      //     "Digit4",
+      //     "Digit5",
+      //     "1",
+      //     "2",
+      //     "3",
+      //     "4",
+      //     "5",
+      //   ].includes(event.code) ||
+      //   ["1", "2", "3", "4", "5"].includes(event.key)
+      // ) {
+      //   event.preventDefault();
+      // }
 
       // Log the keypress for debugging
       console.log(
@@ -203,7 +233,7 @@ export default function GamePage({
         router.push("/");
       }
     },
-    [gameState.whoseTurn]
+    [gameState.whoseTurn, gameState.question]
   );
 
   const performHeroAttack = (multiplier = 1.0) => {
@@ -412,6 +442,8 @@ export default function GamePage({
   };
 
   function onSelectChoice(choice: number) {
+    if (gameStateRef.current.question?.type !== "multiple_choice") return;
+
     if (gameState.whoseTurn !== "hero") {
       console.log("Not your turn!");
       return;
@@ -462,6 +494,64 @@ export default function GamePage({
         whoseTurn: "boss",
       }));
     }
+  }
+
+  function onSubmitShortAnswer(attemptedAnswer: string) {
+    if (gameStateRef.current.question?.type !== "single_choice") return;
+
+    if (gameState.whoseTurn !== "hero") {
+      console.log("Not your turn!");
+      return;
+    }
+
+    if (!choices.current) return;
+    const selectedAnswer = Number(attemptedAnswer);
+    const isCorrect = selectedAnswer === Number(answer.current);
+
+    if (isCorrect) {
+      setShowCorrectEffect(true);
+      SoundManager.play("correctAnswer");
+
+      // Prefetch the next question
+      const questionId =
+        levelData.question_ids[gameState.currentQuestionIndex + 1];
+      fetchQuestion(questionId).then((question) => {
+        if (question) {
+          setGameState((prevState) => ({
+            ...prevState,
+            question,
+            currentQuestionIndex: prevState.currentQuestionIndex + 1,
+          }));
+        }
+      });
+
+      // Show critical hit mini-game instead of immediately attacking
+      setShowCriticalHit(true);
+      setIsTimerStarted(false);
+    }
+    if (!isCorrect) {
+      setShowWrongEffect(true);
+
+      setIsTimerStarted(false);
+
+      // Shake the hero to indicate damage
+      if (heroRef.current) {
+        heroRef.current.classList.add("shake-animation");
+        SoundManager.play("wrongAnswer");
+        setTimeout(() => {
+          if (heroRef.current) {
+            heroRef.current.classList.remove("shake-animation");
+          }
+          setShowWrongEffect(false);
+        }, 500);
+      }
+
+      setGameState((prevState) => ({
+        ...prevState,
+        whoseTurn: "boss",
+      }));
+    }
+
   }
 
   useEffect(() => {
@@ -609,12 +699,9 @@ export default function GamePage({
   let answer = useRef(gameState.question?.answer.split(",")[0]);
   answer.current = gameState.question?.answer.split(",")[0];
   let choices = useRef(
-    gameState.question?.answer.split(",").slice(1)[0].split("|")
+    (gameState.question?.type === "multiple_choice") ? gameState.question?.answer.split(",").slice(1)[0].split("|") : [gameState.question?.answer]
   );
-  choices.current = gameState.question?.answer
-    .split(",")
-    .slice(1)[0]
-    .split("|");
+  choices.current = (gameState.question?.type === "multiple_choice") ? gameState.question?.answer.split(",").slice(1)[0].split("|") : [gameState.question?.answer]
 
   return (
     <div className="w-full h-full">
@@ -637,7 +724,7 @@ export default function GamePage({
               ) : (
                 <div className="flex flex-col items-center">
                   <p className="text-lg">{gameState.question?.question}</p>
-                  {choices.current && (
+                  {(choices.current && gameState.question?.type === "multiple_choice") && (
                     <div className="flex flex-col gap-2 mt-4">
                       {choices.current.map((choice, index) => (
                         <div className="relative w-full" key={index}>
@@ -660,6 +747,22 @@ export default function GamePage({
                       ))}
                     </div>
                   )}
+                  {
+                    (gameState.question?.type === "single_choice" && (
+                      <div className="flex flex-col gap-2 mt-4">
+                        <input
+                          type="text"
+                          className="px-4 py-2 rounded text-black w-full text-center"
+                          placeholder="Type your answer here"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              onSubmitShortAnswer(e.currentTarget.value);
+                            }
+                          }}
+                        />
+                      </div>
+                    ))
+                  }
                 </div>
               )}
             </div>
