@@ -128,6 +128,8 @@ export default function GamePage({
   const [damageMultiplier, setDamageMultiplier] = useState(1.0);
   const [showDamageText, setShowDamageText] = useState(false);
   const [damageText, setDamageText] = useState("");
+  const userImageURL = userData.user_image || heroImage;
+  const bossImageURL = levelData.boss_image_s3 || monsterImage;
 
   const fetchQuestion = async (questionId: string) => {
     setLoading(true);
@@ -656,6 +658,18 @@ export default function GamePage({
     };
   }, []);
 
+  function getImageURL(level : number) {
+    let levelString = "0";
+    if (level >= 10){
+      levelString = "9";
+    } else{
+      levelString = (level - 1).toString();
+    }
+    const baseURL = process.env.NEXT_PUBLIC_RESOURCE_URL || "https://https://d24bh8xfes1923.cloudfront.net"
+    return `${baseURL}/character/character_${levelString}.png`;
+  }
+  
+
   useEffect(() => {
     if (gameState.boss.health <= 0) {
       // Handle boss defeat
@@ -663,6 +677,7 @@ export default function GamePage({
 
       const updatedUserData: UpdateUserBody = {
         ...userData,
+        user_image: getImageURL(levelData.level + 1),
         level_id: levelData.level + 1,
       };
       updateUser(updatedUserData).then(() => {
@@ -851,7 +866,9 @@ export default function GamePage({
             )}
 
             <Image
-              src={monsterImage}
+              src={bossImageURL}
+              width={384}
+              height={384}
               alt="monster"
               className="h-80 md:h-96 w-fit object-cover -scale-x-100 [image-rendering:pixelated]"
             />
@@ -865,7 +882,7 @@ export default function GamePage({
               transition: isHeroAttacking ? "none" : "transform 0.5s ease-out",
             }}
           >
-            <span className="bg-neutral-200/60 p-1 absolute left-10 right-10 backdrop-blur-sm w-fit">
+            <span className="bg-neutral-200/60 p-1 absolute left-10 right-10 backdrop-blur-sm text-center">
               {userData.name}
             </span>
 
@@ -879,9 +896,11 @@ export default function GamePage({
               />
             )}
             <Image
-              src={heroImage}
+              src={userImageURL}
+              width={1800}
+              height={1800}
               alt="hero"
-              className={`h-80 md:h-96 w-fit object-cover -scale-x-100 [image-rendering:pixelated] ${
+              className={`h-80 md:h-96 w-fit object-cover [image-rendering:pixelated] ${
                 isHeroAttacking ? "animate-pulse" : ""
               }`}
             />
