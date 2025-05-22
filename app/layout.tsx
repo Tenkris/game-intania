@@ -37,7 +37,7 @@ export default function RootLayout({
     >
       <body className="bg-background text-foreground w-screen h-screen relative">
         <div className="w-full h-full">
-          <div className="absolute -z-50 w-full h-full">
+          <div className="fixed -z-50 w-full h-full">
             <Image
               src="https://s3.imjustin.dev/hackathon/map_day.webp"
               alt="background"
