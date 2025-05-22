@@ -881,7 +881,7 @@ export default function GamePage({
               width={384}
               height={384}
               alt="monster"
-              className="h-80 md:h-96 w-fit object-cover -scale-x-100 [image-rendering:pixelated]"
+              className="h-80 md:h-96 w-fit object-cover [image-rendering:pixelated]"
             />
           </div>
           {/* Hero section with dynamic positioning */}
