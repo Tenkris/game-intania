@@ -20,6 +20,7 @@ import CriticalHit from "./critical-hit";
 import LevelComplete from "./level-complete";
 
 import PlayerStats from "./player-stats";
+import { useBackgroundImage } from "../context/BackgroundImageCtx";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:3000/api/v1";
@@ -130,9 +131,17 @@ export default function GamePage({
   const [damageMultiplier, setDamageMultiplier] = useState(1.0);
   const [showDamageText, setShowDamageText] = useState(false);
   const [damageText, setDamageText] = useState("");
-  const userImageURL = userData.user_image || heroImage;
+  const userImageURL = userData.user_image || "https://d24bh8xfes1923.cloudfront.net/character/character_0.png";
   const bossImageURL = levelData.boss_image_s3 || monsterImage;
-  const backgroundImageURL = levelData.background_image_s3;
+
+
+  // add background image
+  const {setBackgroundSrc} = useBackgroundImage();
+
+  useEffect(() => {
+    if (!levelData.background_image_s3) return;
+    setBackgroundSrc(levelData.background_image_s3);
+  },[]);
 
   const fetchQuestion = async (questionId: string) => {
     setLoading(true);
@@ -668,7 +677,7 @@ export default function GamePage({
     } else{
       levelString = (level - 1).toString();
     }
-    const baseURL = process.env.NEXT_PUBLIC_RESOURCE_URL || "https://https://d24bh8xfes1923.cloudfront.net"
+    const baseURL = process.env.NEXT_PUBLIC_RESOURCE_URL || "https://d24bh8xfes1923.cloudfront.net"
     return `${baseURL}/character/character_${levelString}.png`;
   }
   
@@ -723,17 +732,6 @@ export default function GamePage({
 
   return (
     <div className="w-full h-full">
-      { /* Background Image */}
-        <div className="absolute -z-50 w-full h-full">
-          <Image
-            src={backgroundImageURL}
-            alt="background"
-            width={1920}
-            height={1080}
-            className="w-full h-full object-cover object-center"
-          />
-        </div>
-      {/* Overlay */}
       <div
         className={`absolute w-full h-full z-30 flex justify-center items-center ${isHeroAttacking ? "hidden" : ""}`}
       >
