@@ -670,7 +670,7 @@ export default function GamePage({
           <CriticalHit onComplete={handleCriticalHitComplete} />
         )}
 
-        {showLevelComplete && <LevelComplete LevelCompleted={completed} />}
+        {showLevelComplete && <LevelComplete LevelCompleted={completed} currentLevel={levelData.level} highestLevel={userData.level_id} />}
 
         {gameState.whoseTurn === "boss" && (
           <BossDefense
