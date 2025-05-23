@@ -7,7 +7,7 @@ const API_URL =
   process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:3000/api/v1";
 
 type GamePageProps = {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export default async function GamePage({ searchParams }: GamePageProps) {
@@ -18,7 +18,7 @@ export default async function GamePage({ searchParams }: GamePageProps) {
   const userData = await getMyUser();
 
   // Use level from query param if present, otherwise fallback to user's level
-  const levelParam = searchParams?.level;
+  const levelParam = (await searchParams)?.level;
   const levelId =
     typeof levelParam === "string"
       ? levelParam
