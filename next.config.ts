@@ -8,6 +8,12 @@ const nextConfig: NextConfig = {
         hostname: "s3.imjustin.dev",
         pathname: "/hackathon/**",
       },
+      {
+        protocol: "https",
+        hostname: "d24bh8xfes1923.cloudfront.net",
+        pathname: "/**",
+      },
+      
     ],
   },
 };

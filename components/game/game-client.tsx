@@ -20,6 +20,7 @@ import CriticalHit from "./critical-hit";
 import LevelComplete from "./level-complete";
 
 import PlayerStats from "./player-stats";
+import { useBackgroundImage } from "../context/BackgroundImageCtx";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:3000/api/v1";
@@ -123,11 +124,24 @@ export default function GamePage({
   const router = useRouter();
 
   const [showCriticalHit, setShowCriticalHit] = useState(false);
+  const showCriticalHitRef = useRef(showCriticalHit);
+  showCriticalHitRef.current = showCriticalHit;
   const [showLevelComplete, setShowLevelComplete] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [damageMultiplier, setDamageMultiplier] = useState(1.0);
   const [showDamageText, setShowDamageText] = useState(false);
   const [damageText, setDamageText] = useState("");
+  const userImageURL = userData.user_image || "https://d24bh8xfes1923.cloudfront.net/character/character_0.png";
+  const bossImageURL = levelData.boss_image_s3 || monsterImage;
+
+
+  // add background image
+  const {setBackgroundSrc} = useBackgroundImage();
+
+  useEffect(() => {
+    if (!levelData.background_image_s3) return;
+    setBackgroundSrc(levelData.background_image_s3);
+  },[]);
 
   const fetchQuestion = async (questionId: string) => {
     setLoading(true);
@@ -158,8 +172,8 @@ export default function GamePage({
   const handleKeydown = useCallback(
     (event: KeyboardEvent) => {
       // Prevent default for game keys
-      if (
-        [
+      // console.log(gameStateRef.current.question)
+      if ((gameStateRef.current.question?.type === "multiple_choice") && ([
           "Space",
           "Enter",
           "Escape",
@@ -174,10 +188,40 @@ export default function GamePage({
           "4",
           "5",
         ].includes(event.code) ||
-        ["1", "2", "3", "4", "5"].includes(event.key)
+        ["1", "2", "3", "4", "5"].includes(event.key))
       ) {
+        console.log("Preventing default for game keys");
         event.preventDefault();
       }
+      if ((gameStateRef.current.question?.type === "single_choice") && [
+          "Enter",
+          "Escape",
+          "Space",
+        ].includes(event.code)
+      ) {
+        console.log("Preventing default for Enter and Space");
+        event.preventDefault();
+      }
+      // if (
+      //   [
+      //     "Space",
+      //     "Enter",
+      //     "Escape",
+      //     "Digit1",
+      //     "Digit2",
+      //     "Digit3",
+      //     "Digit4",
+      //     "Digit5",
+      //     "1",
+      //     "2",
+      //     "3",
+      //     "4",
+      //     "5",
+      //   ].includes(event.code) ||
+      //   ["1", "2", "3", "4", "5"].includes(event.key)
+      // ) {
+      //   event.preventDefault();
+      // }
 
       // Log the keypress for debugging
       console.log(
@@ -203,7 +247,7 @@ export default function GamePage({
         router.push("/");
       }
     },
-    [gameState.whoseTurn]
+    [gameState.whoseTurn, gameState.question]
   );
 
   const performHeroAttack = (multiplier = 1.0) => {
@@ -412,7 +456,9 @@ export default function GamePage({
   };
 
   function onSelectChoice(choice: number) {
-    if (gameState.whoseTurn !== "hero") {
+    if (gameStateRef.current.question?.type !== "multiple_choice") return;
+
+    if ((gameStateRef.current.whoseTurn !== "hero") || showCriticalHitRef.current) {
       console.log("Not your turn!");
       return;
     }
@@ -425,7 +471,7 @@ export default function GamePage({
 
       // Prefetch the next question
       const questionId =
-        levelData.question_ids[gameState.currentQuestionIndex + 1];
+        levelData.question_ids[gameStateRef.current.currentQuestionIndex + 1];
       fetchQuestion(questionId).then((question) => {
         if (question) {
           setGameState((prevState) => ({
@@ -464,6 +510,64 @@ export default function GamePage({
     }
   }
 
+  function onSubmitShortAnswer(attemptedAnswer: string) {
+    if (gameStateRef.current.question?.type !== "single_choice") return;
+
+    if (gameState.whoseTurn !== "hero") {
+      console.log("Not your turn!");
+      return;
+    }
+
+    if (!choices.current) return;
+    const selectedAnswer = Number(attemptedAnswer);
+    const isCorrect = selectedAnswer === Number(answer.current);
+
+    if (isCorrect) {
+      setShowCorrectEffect(true);
+      SoundManager.play("correctAnswer");
+
+      // Prefetch the next question
+      const questionId =
+        levelData.question_ids[gameStateRef.current.currentQuestionIndex + 1];
+      fetchQuestion(questionId).then((question) => {
+        if (question) {
+          setGameState((prevState) => ({
+            ...prevState,
+            question,
+            currentQuestionIndex: prevState.currentQuestionIndex + 1,
+          }));
+        }
+      });
+
+      // Show critical hit mini-game instead of immediately attacking
+      setShowCriticalHit(true);
+      setIsTimerStarted(false);
+    }
+    if (!isCorrect) {
+      setShowWrongEffect(true);
+
+      setIsTimerStarted(false);
+
+      // Shake the hero to indicate damage
+      if (heroRef.current) {
+        heroRef.current.classList.add("shake-animation");
+        SoundManager.play("wrongAnswer");
+        setTimeout(() => {
+          if (heroRef.current) {
+            heroRef.current.classList.remove("shake-animation");
+          }
+          setShowWrongEffect(false);
+        }, 500);
+      }
+
+      setGameState((prevState) => ({
+        ...prevState,
+        whoseTurn: "boss",
+      }));
+    }
+
+  }
+
   useEffect(() => {
     if (gameState.whoseTurn === "boss") {
       setIsTimerStarted(true);
@@ -490,7 +594,7 @@ export default function GamePage({
 
   useEffect(() => {
     const fetchData = async () => {
-      const questionId = levelData.question_ids[gameState.currentQuestionIndex];
+      const questionId = levelData.question_ids[gameStateRef.current.currentQuestionIndex];
       const question = await fetchQuestion(questionId);
       if (question) {
         setGameState((prevState) => ({
@@ -566,6 +670,18 @@ export default function GamePage({
     };
   }, []);
 
+  function getImageURL(level : number) {
+    let levelString = "0";
+    if (level >= 10){
+      levelString = "9";
+    } else{
+      levelString = (level - 1).toString();
+    }
+    const baseURL = process.env.NEXT_PUBLIC_RESOURCE_URL || "https://d24bh8xfes1923.cloudfront.net"
+    return `${baseURL}/character/character_${levelString}.png`;
+  }
+  
+
   useEffect(() => {
     if (gameState.boss.health <= 0) {
       // Handle boss defeat
@@ -573,6 +689,7 @@ export default function GamePage({
 
       const updatedUserData: UpdateUserBody = {
         ...userData,
+        user_image: getImageURL(levelData.level + 1),
         level_id: levelData.level + 1,
       };
       updateUser(updatedUserData).then(() => {
@@ -609,16 +726,12 @@ export default function GamePage({
   let answer = useRef(gameState.question?.answer.split(",")[0]);
   answer.current = gameState.question?.answer.split(",")[0];
   let choices = useRef(
-    gameState.question?.answer.split(",").slice(1)[0].split("|")
+    (gameState.question?.type === "multiple_choice") ? gameState.question?.answer.split(",").slice(1)[0].split("|") : [gameState.question?.answer]
   );
-  choices.current = gameState.question?.answer
-    .split(",")
-    .slice(1)[0]
-    .split("|");
+  choices.current = (gameState.question?.type === "multiple_choice") ? gameState.question?.answer.split(",").slice(1)[0].split("|") : [gameState.question?.answer]
 
   return (
     <div className="w-full h-full">
-      {/* Overlay */}
       <div
         className={`absolute w-full h-full z-30 flex justify-center items-center ${isHeroAttacking ? "hidden" : ""}`}
       >
@@ -637,7 +750,7 @@ export default function GamePage({
               ) : (
                 <div className="flex flex-col items-center">
                   <p className="text-lg">{gameState.question?.question}</p>
-                  {choices.current && (
+                  {(choices.current && gameState.question?.type === "multiple_choice") && (
                     <div className="flex flex-col gap-2 mt-4">
                       {choices.current.map((choice, index) => (
                         <div className="relative w-full" key={index}>
@@ -660,6 +773,23 @@ export default function GamePage({
                       ))}
                     </div>
                   )}
+                  {
+                    (gameState.question?.type === "single_choice" && (
+                      <div className="flex flex-col gap-2 mt-4">
+                        <input
+                          type="text"
+                          className="px-4 py-2 rounded text-black w-full text-center"
+                          placeholder="Type your answer here"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              onSubmitShortAnswer(e.currentTarget.value);
+                            }
+                          }}
+                          autoFocus 
+                        />
+                      </div>
+                    ))
+                  }
                 </div>
               )}
             </div>
@@ -747,9 +877,11 @@ export default function GamePage({
             )}
 
             <Image
-              src={monsterImage}
+              src={bossImageURL}
+              width={384}
+              height={384}
               alt="monster"
-              className="h-80 md:h-96 w-fit object-cover -scale-x-100 [image-rendering:pixelated]"
+              className="h-80 md:h-96 w-fit object-cover [image-rendering:pixelated]"
             />
           </div>
           {/* Hero section with dynamic positioning */}
@@ -761,7 +893,7 @@ export default function GamePage({
               transition: isHeroAttacking ? "none" : "transform 0.5s ease-out",
             }}
           >
-            <span className="bg-neutral-200/60 p-1 absolute left-10 right-10 backdrop-blur-sm w-fit">
+            <span className="bg-neutral-200/60 p-1 absolute left-10 right-10 backdrop-blur-sm text-center">
               {userData.name}
             </span>
 
@@ -775,9 +907,11 @@ export default function GamePage({
               />
             )}
             <Image
-              src={heroImage}
+              src={userImageURL}
+              width={1800}
+              height={1800}
               alt="hero"
-              className={`h-80 md:h-96 w-fit object-cover -scale-x-100 [image-rendering:pixelated] ${
+              className={`h-80 md:h-96 w-fit object-cover [image-rendering:pixelated] ${
                 isHeroAttacking ? "animate-pulse" : ""
               }`}
             />
