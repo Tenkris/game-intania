@@ -93,7 +93,7 @@ export default function CriticalHit({ onComplete }: CriticalHitProps) {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!isActive) return;
 
-      if (event.code === "Space" || event.code === "Enter") {
+      if (event.code === "Space") {
         event.preventDefault();
 
         // Stop the animation
@@ -147,7 +147,7 @@ export default function CriticalHit({ onComplete }: CriticalHitProps) {
         />
 
         <div className="flex flex-col items-center w-full max-w-[36rem] px-6">
-          <h1 className="text-3xl font-bold mb-2 text-amber-400 drop-shadow-md">
+          <h1 className="text-[28px] font-bold mb-2 text-amber-400 drop-shadow-md">
             ⚔️ Critical Hit! ⚔️
           </h1>
 
@@ -264,10 +264,6 @@ export default function CriticalHit({ onComplete }: CriticalHitProps) {
               <p className="text-xs text-neutral-600 mt-4">
                 <span className="bg-neutral-800 text-white px-2 py-0.5 rounded">
                   SPACE
-                </span>{" "}
-                or{" "}
-                <span className="bg-neutral-800 text-white px-2 py-0.5 rounded">
-                  ENTER
                 </span>{" "}
                 to hit!
               </p>

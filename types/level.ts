@@ -28,6 +28,7 @@ export interface QuestionData {
 export interface LevelData {
   boss_name: string;
   boss_image_s3: string;
+  background_image_s3: string;
   boss_hp: number;
   boss_attack: number;
   question_ids: any[];

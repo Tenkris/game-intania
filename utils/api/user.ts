@@ -97,6 +97,7 @@ export async function getAllUsers() {
   }
 }
 
+
 export async function updateUser(updateUserData: UpdateUserBody) {
   try {
     // Get cookie
