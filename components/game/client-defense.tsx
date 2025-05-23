@@ -180,11 +180,11 @@ function BossDefense({
     const handleKeydown = (event: KeyboardEvent) => {
       if (event.code === "Space") {
         event.preventDefault();
-        if (event.repeat){
+        if (event.repeat) {
           console.log("You are not allowed to hold the spacebar for guarding.");
           return;
         }
-        
+
         // Small debounce to prevent too many rapid calls (20ms is still responsive but prevents overload)
         const now = Date.now();
         if (now - lastSpacebarPressRef.current > 20) {
@@ -215,7 +215,7 @@ function BossDefense({
     // Set attack timer
     attackTimerRef.current = setTimeout(() => {
       // Calculate damage reduction based on shield value
-      const damageReduction = shieldValueRef.current / 100; // 0 to 1
+      const damageReduction = (shieldValueRef.current / 100) * 0.65; // 0 to 0.65
 
       // Play appropriate sound based on shield level
       if (shieldValueRef.current > 75) {
