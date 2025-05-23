@@ -37,7 +37,7 @@ export default function RootLayout({
       className={`${geistSans.className} ${pressStart.className}`}
       suppressHydrationWarning
     >
-      <body className="bg-background text-foreground w-screen h-screen relative">
+      <body className="bg-background text-foreground w-full h-screen relative">
         <BackgroundImageProvider >
           <div className="w-full h-full">
             <div className="absolute -z-50 w-full h-full">
