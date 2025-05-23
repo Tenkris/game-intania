@@ -58,7 +58,14 @@ function LevelsSelector({ userData }: { userData: User }) {
                     //@ts-ignore
                     style={levelPositions[index + 1]}
                   >
-                    <div className="w-[min(8vw,_4rem)] h-[min(8vw,_4rem)] rounded-full bg-blue-400 border-[3px] border-blue-600 flex items-center justify-center cursor-pointer transition-transform shadow-lg z-50">
+                    <div 
+                      className={`w-[min(8vw,_4rem)] h-[min(8vw,_4rem)] rounded-full ${(level <= userData.level_id) ? 'bg-blue-400' : 'bg-slate-400'} border-[3px] ${(level <= userData.level_id) ? 'border-blue-600' : 'border-slate-600'} flex items-center justify-center ${(level <= userData.level_id) ? 'cursor-pointer' : 'cursor-default'} transition-transform shadow-lg z-50`}
+                      onClick={() => {
+                        if (level <= userData.level_id) {
+                          window.location.href = `/game?level=${level}`;
+                        }
+                      }}
+                    >
                       <span className="text-white font-bold text-[min(4vw,_1.5rem)]">
                         {level}
                       </span>
