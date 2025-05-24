@@ -1,10 +1,9 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 import { User } from "@/types/user";
 
 function LevelsSelector({ userData }: { userData: User }) {
-  const [scrollPosition, setScrollPosition] = useState(0);
   // Mock level data by groups
   // Levels from 1 to 100
   // Split into groups of 5
@@ -23,15 +22,6 @@ function LevelsSelector({ userData }: { userData: User }) {
         : { gridArea: "4 / 1 / 20 / 5" },
     5: { gridArea: "5 / 3 / 5 / 35" },
   };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollPosition(window.scrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center">
@@ -58,8 +48,8 @@ function LevelsSelector({ userData }: { userData: User }) {
                     //@ts-ignore
                     style={levelPositions[index + 1]}
                   >
-                    <div 
-                      className={`w-[min(8vw,_4rem)] h-[min(8vw,_4rem)] rounded-full ${(level <= userData.level_id) ? 'bg-blue-400' : 'bg-slate-400'} border-[3px] ${(level <= userData.level_id) ? 'border-blue-600' : 'border-slate-600'} flex items-center justify-center ${(level <= userData.level_id) ? 'cursor-pointer' : 'cursor-default'} transition-transform shadow-lg z-50`}
+                    <div
+                      className={`w-[min(8vw,_4rem)] h-[min(8vw,_4rem)] rounded-full ${level < userData.level_id ? "bg-green-400" : level === userData.level_id ? "bg-blue-400" : "bg-slate-400"} border-[3px] ${level < userData.level_id ? "border-green-600" : level === userData.level_id ? "border-blue-600" : "border-slate-600"} flex items-center justify-center ${level <= userData.level_id ? "cursor-pointer" : "cursor-default"} transition-transform shadow-lg z-50`}
                       onClick={() => {
                         if (level <= userData.level_id) {
                           window.location.href = `/game?level=${level}`;
