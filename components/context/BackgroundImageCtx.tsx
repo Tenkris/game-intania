@@ -3,17 +3,16 @@
 import React, { createContext, useContext, useState } from 'react';
 
 type BackgroundImageContextType = {
-  backgroundSrc: string;
+  backgroundSrc: string | null;
   setBackgroundSrc: (src: string) => void;
 };
 
 const BackgroundImageContext = createContext<BackgroundImageContextType | undefined>(undefined);
 
 export const BackgroundImageProvider = ({ children }: { children: React.ReactNode }) => {
-  const [backgroundSrc, setBackgroundSrc] = useState<string>(
-    "https://s3.imjustin.dev/hackathon/map_day.webp"
+  const [backgroundSrc, setBackgroundSrc] = useState<string | null>(
+    null
   );
-  //console.log('BackgroundImageProvider', backgroundSrc);
 
   return (
     <BackgroundImageContext.Provider value={{ backgroundSrc, setBackgroundSrc }}>
