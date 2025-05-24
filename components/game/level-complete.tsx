@@ -11,12 +11,12 @@ import GamblingCarousel from "../gift/Carousel";
 const mockUpgradables = [
   { label: "+ 20 ATK", attribute: "attack", value: 20 },
   { label: "+ 20 DEF", attribute: "defense", value: 20 },
-  { label: "+ 20 SPD", attribute: "speed", value: 20 },
+  { label: "+ 20 HP", attribute: "hp", value: 20 },
   //   { label: "+ 20% Crit", attribute: "critical", value: 20 },
 ];
-const LevelComplete = ({ LevelCompleted }: { LevelCompleted: boolean }) => {
+const LevelComplete = ({ LevelCompleted, currentLevel, highestLevel }: { LevelCompleted: boolean, currentLevel: number, highestLevel: number }) => {
   const router = useRouter();
-  const [showNext, setShowNext] = useState<boolean>(false);
+  const [showNext, setShowNext] = useState<boolean>(currentLevel < highestLevel);
   const [showGambling, setShowGambling] = useState<boolean>(false);
 
   const handleUpdateUser = async (field: keyof User, value: number) => {
@@ -92,7 +92,7 @@ const LevelComplete = ({ LevelCompleted }: { LevelCompleted: boolean }) => {
         <h1 className="text-2xl font-bold mb-4">Go to Level?</h1>
         <div className="flex flex-row gap-5 p-4">
           <ButtonImage onClick={() => router.push("/")}>Home</ButtonImage>
-          <ButtonImage onClick={() => window.location.reload()}>
+          <ButtonImage onClick={() => window.location.href = `/game?level=${currentLevel + 1}`}>
             Next Level
           </ButtonImage>
         </div>

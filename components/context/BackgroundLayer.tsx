@@ -20,7 +20,7 @@ export function BackgroundLayer() {
 
   
     return (
-      <div className="absolute -z-50 w-full h-full">
+      <div className="fixed -z-50 w-full h-full">
         {(backgroundSrc !== defaultBackgroundSrc || pathname !== "/game") ? (
         <Image
           src={backgroundSrc}

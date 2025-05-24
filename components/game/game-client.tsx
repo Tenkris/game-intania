@@ -689,8 +689,8 @@ export default function GamePage({
 
       const updatedUserData: UpdateUserBody = {
         ...userData,
-        user_image: getImageURL(levelData.level + 1),
-        level_id: levelData.level + 1,
+        user_image: getImageURL((levelData.level === userData.level_id) ? levelData.level + 1 : userData.level_id),
+        level_id: (levelData.level === userData.level_id) ? levelData.level + 1 : userData.level_id,
       };
       updateUser(updatedUserData).then(() => {
         setIsTimerStarted(false);
@@ -800,7 +800,7 @@ export default function GamePage({
           <CriticalHit onComplete={handleCriticalHitComplete} />
         )}
 
-        {showLevelComplete && <LevelComplete LevelCompleted={completed} />}
+        {showLevelComplete && <LevelComplete LevelCompleted={completed} currentLevel={levelData.level} highestLevel={userData.level_id} />}
 
         {gameState.whoseTurn === "boss" && (
           <BossDefense
