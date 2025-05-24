@@ -1,3 +1,4 @@
+import LoadDefaultBackground from "@/components/context/LoadDefaultBackground";
 import GameClient from "@/components/game/game-client";
 import { getLevelData, getMyUser } from "@/utils/api/user";
 import { get } from "http";
@@ -17,13 +18,13 @@ export default async function GamePage() {
     level: userData?.level_id.toString() || "",
   });
   if (!levelData) {
-    return <div>Level not found</div>;
+    return (<LoadDefaultBackground><div>Level not found</div></LoadDefaultBackground>);
   }
   if (!token) {
-    return <div>Token not found</div>;
+    return (<LoadDefaultBackground><div>Token not found</div></LoadDefaultBackground>);
   }
   if (!userData) {
-    return <div>User not found</div>;
+    return (<LoadDefaultBackground><div>User not found</div></LoadDefaultBackground>);
   }
 
   return (

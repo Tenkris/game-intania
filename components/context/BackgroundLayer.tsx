@@ -21,15 +21,14 @@ export function BackgroundLayer() {
   
     return (
       <div className="absolute -z-50 w-full h-full">
-        {(backgroundSrc !== defaultBackgroundSrc || pathname !== "/game") ? (
+        {(backgroundSrc) && (
         <Image
           src={backgroundSrc}
           alt="background"
           fill
           className="object-cover object-center"
           priority
-        />) :
-        <div className="w-full h-full bg-black"/>
+        />) 
         }
       </div>
     );
