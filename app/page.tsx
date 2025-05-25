@@ -16,7 +16,7 @@ export default async function HomePage() {
 
         {
           userInfo ? (
-            <ButtonImage><Link href="/game" className="w-full text-center block">Play</Link></ButtonImage>
+            <ButtonImage><Link href="/levels" className="w-full text-center block">Play</Link></ButtonImage>
           ) : (
             <>
               <ButtonImage><Link href="/login" className="w-full text-center block">Login</Link></ButtonImage>
